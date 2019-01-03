@@ -1,0 +1,16 @@
+
+list all running containers by name only
+docker ps -q 
+
+kill all listed containers
+docker kill $(docker ps -q)
+
+build tagged (named) image
+docker build -t="go-srv:v1" .
+
+
+run container, mapping port 80 to port 80
+docker run -p 80:80 8d5c1b1de192
+docker run --rm --name="containername"
+docker run --name="gosrv" --rm  go-srv:v2
+docker run --rm --name="nginxsrv" -p 80:80 go-nginx:v4
