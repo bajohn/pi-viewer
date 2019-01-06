@@ -1,0 +1,11 @@
+FROM golang:alpine
+
+ADD . /home
+        
+WORKDIR /home
+
+COPY . .
+
+CMD ["go","run","hello.go"]
+
+EXPOSE 8002
