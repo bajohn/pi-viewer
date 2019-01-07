@@ -8,4 +8,4 @@ COPY . .
 
 CMD ["go","run","hello.go"]
 
-EXPOSE 80
+EXPOSE 8002
