@@ -28,6 +28,9 @@ docker run --rm --name="containername"
 docker run --name="gosrv" --rm  go-srv:v2
 docker run --rm --name="nginxsrv" -p 80:80 go-nginx:v4
 
+run composed image
+docker-compose up
+docker-compose down OR docker-compose kill
 
 ssh into running container
 docker run -it --rm --privileged --pid=host justincormack/nsenter1

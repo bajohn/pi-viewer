@@ -1,31 +1,21 @@
-# version: '3'
-# services:
-#   nginx: 
-#     image: nginx:alpine
-#     container_name: nginx_container
-#     volumes:
-#       - ./nginx.conf:/etc/nginx/nginx.conf
-#     ports:
-#       - 80:80
-#       - 443:443
-
-#   go:
-#     image: golang:alpine
-#     container_name: go_container
-#     volumes:
-#       - ./go-src:/home
-#     command: 
-#     expose:
-#       - "8002"
 version: '3'
 services:
   gosrv:
-    build:
-      context: ./go-base
-    expose:
+    image: golang:alpine
+    working_dir: /home
+    build: .
+    command: ["go","run","hello.go"]
+    volumes:
+       - ./go-base/src:/home
+    expose: 
       - "8002"
   nginx:
-    build:
-      context: ./nginx-base
+    image: nginx
+    volumes:
+      - ./nginx-base/nginx-conf:/etc/nginx
+      - ./nginx-base/static-files:/www/data/static
+      - ./angular-base/dist/:/www/data/ng/
+    command: ["nginx", "-g daemon off;"]
     ports:
       - "80:80"
+

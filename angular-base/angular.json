@@ -13,8 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/sample",
-            "index": "src/index.html",
+            "index": "src/ng-index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
@@ -29,8 +28,9 @@
           },
           "configurations": {
             "production": {
-              "outputPath": "../../nginx-base/ng-out",
-              "watch": true
+              "outputPath": "./dist",
+              "watch": true,
+              "outputHashing": "all"
             }
           }
         },
