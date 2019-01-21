@@ -3,7 +3,7 @@ services:
   gosrv:
     image: golang:alpine
     working_dir: /home
-    command: ["go","run","hello.go"]
+    command: ["go","run","root.go"]
     volumes:
        - ./go-base/src:/home
     expose: 
@@ -27,6 +27,7 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_SITE_BASEURL: /mongo/
 
   nginx:
     image: nginx
