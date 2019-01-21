@@ -14,12 +14,15 @@ package main
 import (
 	"fmt"
 	"net/http"
+	// "gopkg.in/mgo.v2"
 )
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, you've requested via nginx: %s\n", r.URL.Path)
 	})
+
+
 
 	http.ListenAndServe(":8002", nil)
 }
