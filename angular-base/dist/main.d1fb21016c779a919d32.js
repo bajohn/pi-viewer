@@ -125,6 +125,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app-routing.module */ "./src/app/app-routing.module.ts");
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
+/* harmony import */ var _subcomponents_d3_view_d3_view_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./subcomponents/d3-view/d3-view.component */ "./src/app/subcomponents/d3-view/d3-view.component.ts");
+
 
 
 
@@ -136,7 +138,8 @@ var AppModule = /** @class */ (function () {
     AppModule = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_2__["NgModule"])({
             declarations: [
-                _app_component__WEBPACK_IMPORTED_MODULE_4__["AppComponent"]
+                _app_component__WEBPACK_IMPORTED_MODULE_4__["AppComponent"],
+                _subcomponents_d3_view_d3_view_component__WEBPACK_IMPORTED_MODULE_5__["D3ViewComponent"]
             ],
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"],
@@ -147,6 +150,62 @@ var AppModule = /** @class */ (function () {
         })
     ], AppModule);
     return AppModule;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/subcomponents/d3-view/d3-view.component.css":
+/*!*************************************************************!*\
+  !*** ./src/app/subcomponents/d3-view/d3-view.component.css ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL3N1YmNvbXBvbmVudHMvZDMtdmlldy9kMy12aWV3LmNvbXBvbmVudC5jc3MifQ== */"
+
+/***/ }),
+
+/***/ "./src/app/subcomponents/d3-view/d3-view.component.html":
+/*!**************************************************************!*\
+  !*** ./src/app/subcomponents/d3-view/d3-view.component.html ***!
+  \**************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<p>\n  d3-view works!\n</p>\n"
+
+/***/ }),
+
+/***/ "./src/app/subcomponents/d3-view/d3-view.component.ts":
+/*!************************************************************!*\
+  !*** ./src/app/subcomponents/d3-view/d3-view.component.ts ***!
+  \************************************************************/
+/*! exports provided: D3ViewComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "D3ViewComponent", function() { return D3ViewComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+
+
+var D3ViewComponent = /** @class */ (function () {
+    function D3ViewComponent() {
+    }
+    D3ViewComponent.prototype.ngOnInit = function () {
+    };
+    D3ViewComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-d3-view',
+            template: __webpack_require__(/*! ./d3-view.component.html */ "./src/app/subcomponents/d3-view/d3-view.component.html"),
+            styles: [__webpack_require__(/*! ./d3-view.component.css */ "./src/app/subcomponents/d3-view/d3-view.component.css")]
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+    ], D3ViewComponent);
+    return D3ViewComponent;
 }());
 
 
@@ -220,4 +279,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.92f74987492f2e924a49.js.map
+//# sourceMappingURL=main.d1fb21016c779a919d32.js.map
