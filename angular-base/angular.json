@@ -27,9 +27,30 @@
             "scripts": []
           },
           "configurations": {
-            "production": {
+            "prod": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.dev.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "outputPath": "./dist",
+              "optimization": true,
+              "sourceMap": false,
+              "outputHashing": "all",
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": false,
+              "watch": true
+            },
+            "dev": {
               "outputPath": "./dist",
               "watch": true,
+              "optimization": false,
+              "sourceMap": true,
               "outputHashing": "all"
             }
           }
