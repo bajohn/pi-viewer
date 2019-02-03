@@ -18,5 +18,10 @@
       "es2018",
       "dom"
     ]
-  }
+  },
+  "forceConsistentCasingInFileNames": true,
+  "noImplicitReturns": true,
+  "strict": true,
+  // "noUnusedLocals": true,
+  "noImplicitAny": true,
 }
