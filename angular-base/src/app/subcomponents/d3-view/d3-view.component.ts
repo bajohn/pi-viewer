@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as d3 from "d3"
-import { gridItem } from '../../app-interfaces'
+import { gridItem } from '../../index'
 
 @Component({
   selector: 'app-d3-view',
@@ -17,38 +17,46 @@ export class D3ViewComponent implements OnInit {
 
     const chartId = 'd3-view';
     const selection = d3.select(`#${chartId}`)
-    .append('svg')
-    .attr('width', '100%')
-    .attr('height', '100%')
-    
+      .append('svg')
+      .attr('width', '100%')
+      .attr('height', '100%')
+
     var enterData = selection
-      .selectAll('rect')
+      // .selectAll('rect')
+      // .data(sampleGrid).enter()
+      // .append('rect')
+
+      // .attr('x', d => { return d.x })
+      // .attr('y', d => { return d.y })
+      // .attr('fill', 'red')
+      // .attr('width', d => { return 2 })
+      // .attr('height', d => { return 2 })
+      .selectAll('polygon')
       .data(sampleGrid).enter()
-      .append('rect')
-
-      .attr('x', d => { return d.x })
-      .attr('y', d => { return d.y })
+      .append('polygon')
+      .attr('points', d => {
+        return `${5 * d.x},0 ${5 * d.x + 10},0 ${5 * d.x + 10},10 ${5 * d.x},10 `
+      })
       .attr('fill', 'red')
-      .attr('width', d => { return 2 })
-      .attr('height', d => { return 2 })
-
   }
 
-  private _getGrid() {
+  private _getGrid(): Array<gridItem> {
 
-    const gridSize = 100;
-
-    const ret = [];
-    for (let i = 0; i <= gridSize; i++) {
-      ret.push(
-        {
-          val: i,
-          x: 10 * i,
-          y: 0
-        })
-    }
-    return ret;
+  const gridSize = 100;
+  
+  const ret: Array<gridItem> = [];
+  for (let i = 0; i <= gridSize; i++) {
+    ret.push(
+      {
+        //val: i,
+        x: 10 * i,
+        y: 0,
+        gridX: 10,
+        gridY: 10
+      })
   }
+  return ret;
+}
 
 }
 

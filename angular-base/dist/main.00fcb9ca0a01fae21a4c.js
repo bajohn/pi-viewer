@@ -196,6 +196,20 @@ __webpack_require__.r(__webpack_exports__);
 
 var D3ViewComponent = /** @class */ (function () {
     function D3ViewComponent() {
+        this._getGrid = function () {
+            var gridSize = 100;
+            var ret = [];
+            for (var i = 0; i <= gridSize; i++) {
+                ret.push({
+                    val: i,
+                    x: 10 * i,
+                    y: 0,
+                    gridX: 10,
+                    gridY: 10
+                });
+            }
+            return ret;
+        };
     }
     D3ViewComponent.prototype.ngOnInit = function () {
         var sampleGrid = this._getGrid();
@@ -206,26 +220,21 @@ var D3ViewComponent = /** @class */ (function () {
             .attr('width', '100%')
             .attr('height', '100%');
         var enterData = selection
-            .selectAll('rect')
+            // .selectAll('rect')
+            // .data(sampleGrid).enter()
+            // .append('rect')
+            // .attr('x', d => { return d.x })
+            // .attr('y', d => { return d.y })
+            // .attr('fill', 'red')
+            // .attr('width', d => { return 2 })
+            // .attr('height', d => { return 2 })
+            .selectAll('polygon')
             .data(sampleGrid).enter()
-            .append('rect')
-            .attr('x', function (d) { return d.x; })
-            .attr('y', function (d) { return d.y; })
-            .attr('fill', 'red')
-            .attr('width', function (d) { return 2; })
-            .attr('height', function (d) { return 2; });
-    };
-    D3ViewComponent.prototype._getGrid = function () {
-        var gridSize = 100;
-        var ret = [];
-        for (var i = 0; i <= gridSize; i++) {
-            ret.push({
-                val: i,
-                x: 10 * i,
-                y: 0
-            });
-        }
-        return ret;
+            .append('polygon')
+            .attr('points', function (d) {
+            return 5 * d.x + ",0 " + (5 * d.x + 10) + ",0 " + (5 * d.x + 10) + ",10 " + 5 * d.x + ",10 ";
+        })
+            .attr('fill', 'red');
     };
     D3ViewComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
@@ -316,4 +325,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.64b139329ecad9c4b976.js.map
+//# sourceMappingURL=main.00fcb9ca0a01fae21a4c.js.map
