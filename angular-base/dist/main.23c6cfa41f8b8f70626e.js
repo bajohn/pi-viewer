@@ -156,6 +156,35 @@ var AppModule = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/classes.ts":
+/*!****************************!*\
+  !*** ./src/app/classes.ts ***!
+  \****************************/
+/*! exports provided: pv */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pv", function() { return pv; });
+var pv;
+(function (pv) {
+    var gridParams = /** @class */ (function () {
+        function gridParams() {
+            // number of grid squares across
+            this.gridLimit = 20;
+            // pixels per grid square
+            this.gridScale = 20;
+            this.topBuffer = 1;
+            this.leftBuffer = 1;
+        }
+        return gridParams;
+    }());
+    pv.gridParams = gridParams;
+})(pv || (pv = {}));
+
+
+/***/ }),
+
 /***/ "./src/app/subcomponents/d3-view/d3-view.component.css":
 /*!*************************************************************!*\
   !*** ./src/app/subcomponents/d3-view/d3-view.component.css ***!
@@ -163,7 +192,7 @@ var AppModule = /** @class */ (function () {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "d3-view {\r\n    width: 100%;\r\n    height: 1000px;\r\n}\r\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvc3ViY29tcG9uZW50cy9kMy12aWV3L2QzLXZpZXcuY29tcG9uZW50LmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtJQUNJLFdBQVc7SUFDWCxjQUFjO0FBQ2xCIiwiZmlsZSI6InNyYy9hcHAvc3ViY29tcG9uZW50cy9kMy12aWV3L2QzLXZpZXcuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbImQzLXZpZXcge1xyXG4gICAgd2lkdGg6IDEwMCU7XHJcbiAgICBoZWlnaHQ6IDEwMDBweDtcclxufSJdfQ== */"
+module.exports = ".d3-view {\r\n    width: 100%;\r\n    height: 1000px;\r\n}\r\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvc3ViY29tcG9uZW50cy9kMy12aWV3L2QzLXZpZXcuY29tcG9uZW50LmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtJQUNJLFdBQVc7SUFDWCxjQUFjO0FBQ2xCIiwiZmlsZSI6InNyYy9hcHAvc3ViY29tcG9uZW50cy9kMy12aWV3L2QzLXZpZXcuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5kMy12aWV3IHtcclxuICAgIHdpZHRoOiAxMDAlO1xyXG4gICAgaGVpZ2h0OiAxMDAwcHg7XHJcbn0iXX0= */"
 
 /***/ }),
 
@@ -191,50 +220,94 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var _classes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../classes */ "./src/app/classes.ts");
+
 
 
 
 var D3ViewComponent = /** @class */ (function () {
     function D3ViewComponent() {
-        this._getGrid = function () {
-            var gridSize = 100;
-            var ret = [];
-            for (var i = 0; i <= gridSize; i++) {
-                ret.push({
-                    val: i,
-                    x: 10 * i,
-                    y: 0,
-                    gridX: 10,
-                    gridY: 10
-                });
-            }
-            return ret;
-        };
+        this.gridParams = new _classes__WEBPACK_IMPORTED_MODULE_3__["pv"].gridParams();
+        this._lineFunc = d3__WEBPACK_IMPORTED_MODULE_2__["line"]()
+            .x(function (d) { return d.x; })
+            .y(function (d) { return d.y; });
     }
     D3ViewComponent.prototype.ngOnInit = function () {
-        var sampleGrid = this._getGrid();
-        console.log(sampleGrid);
+        var _this = this;
         var chartId = 'd3-view';
         var selection = d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#" + chartId)
             .append('svg')
             .attr('width', '100%')
             .attr('height', '100%');
         var enterData = selection
-            // .selectAll('rect')
-            // .data(sampleGrid).enter()
-            // .append('rect')
-            // .attr('x', d => { return d.x })
-            // .attr('y', d => { return d.y })
-            // .attr('fill', 'red')
-            // .attr('width', d => { return 2 })
-            // .attr('height', d => { return 2 })
-            .selectAll('polygon')
-            .data(sampleGrid).enter()
-            .append('polygon')
-            .attr('points', function (d) {
-            return 5 * d.x + ",0 " + (5 * d.x + 10) + ",0 " + (5 * d.x + 10) + ",10 " + 5 * d.x + ",10 ";
+            .selectAll('path')
+            .data(this._getStartPoints(this.gridParams.gridLimit)).enter().append('path')
+            // .attr('d', (d) => { 
+            //   console.log(d); 
+            //   this._lineFunc(d) })
+            .attr('d', function (d) {
+            console.log(d);
+            if (d.x === 0) {
+                return _this._lineFunc(_this._drawHorizGridLine(d.y));
+            }
+            else {
+                return _this._lineFunc(_this._drawVertGridLine(d.x));
+            }
         })
-            .attr('fill', 'red');
+            .attr("stroke", "black")
+            .attr("stroke-width", 2)
+            .attr("fill", "none");
+    };
+    D3ViewComponent.prototype._getGridLine = function (startX, startY) {
+        var ret = [];
+        for (var i = 0; i <= this.gridParams.gridLimit; i++) {
+            ret.push({
+                x: this.gridParams.gridScale * (i + startX),
+                y: this.gridParams.gridScale * (i + startY),
+                gridX: this.gridParams.gridScale * i,
+                gridY: 10
+            });
+        }
+        return ret;
+    };
+    D3ViewComponent.prototype._getStartPoints = function (gridLimit) {
+        var ret = [];
+        for (var i = 0; i < gridLimit; i++) {
+            ret.push({
+                x: i,
+                y: 0
+            });
+            ret.push({
+                x: 0,
+                y: i
+            });
+        }
+        console.log(ret);
+        return ret;
+    };
+    D3ViewComponent.prototype._drawHorizGridLine = function (yCoord) {
+        var ret = [];
+        for (var i = 0; i < this.gridParams.gridLimit; i++) {
+            ret.push({
+                x: i * this.gridParams.gridScale,
+                y: (yCoord + this.gridParams.topBuffer) * this.gridParams.gridScale,
+                gridX: i,
+                gridY: yCoord + this.gridParams.topBuffer
+            });
+        }
+        return ret;
+    };
+    D3ViewComponent.prototype._drawVertGridLine = function (xCoord) {
+        var ret = [];
+        for (var i = 0; i < this.gridParams.gridLimit; i++) {
+            ret.push({
+                x: (xCoord + this.gridParams.leftBuffer) * this.gridParams.gridScale,
+                y: i * this.gridParams.gridScale,
+                gridX: xCoord + this.gridParams.leftBuffer,
+                gridY: i
+            });
+        }
+        return ret;
     };
     D3ViewComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
@@ -325,4 +398,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.00fcb9ca0a01fae21a4c.js.map
+//# sourceMappingURL=main.23c6cfa41f8b8f70626e.js.map
