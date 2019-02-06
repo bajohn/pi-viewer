@@ -175,7 +175,7 @@ var pv;
             // pixels per grid square
             this.gridScale = 20;
             this.topBuffer = 1;
-            this.leftBuffer = 1;
+            this.leftBuffer = 10;
         }
         return gridParams;
     }());
@@ -242,13 +242,15 @@ var D3ViewComponent = /** @class */ (function () {
         var enterData = selection
             .selectAll('path')
             .data(this._getStartPoints(this.gridParams.gridLimit)).enter().append('path')
-            // .attr('d', (d) => { 
-            //   console.log(d); 
-            //   this._lineFunc(d) })
             .attr('d', function (d) {
-            console.log(d);
             if (d.x === 0) {
-                return _this._lineFunc(_this._drawHorizGridLine(d.y));
+                if (d.y === 0) {
+                    return _this._lineFunc(_this._drawHorizGridLine(d.y)
+                        .concat(_this._drawVertGridLine(d.x)));
+                }
+                else {
+                    return _this._lineFunc(_this._drawHorizGridLine(d.y));
+                }
             }
             else {
                 return _this._lineFunc(_this._drawVertGridLine(d.x));
@@ -258,21 +260,9 @@ var D3ViewComponent = /** @class */ (function () {
             .attr("stroke-width", 2)
             .attr("fill", "none");
     };
-    D3ViewComponent.prototype._getGridLine = function (startX, startY) {
-        var ret = [];
-        for (var i = 0; i <= this.gridParams.gridLimit; i++) {
-            ret.push({
-                x: this.gridParams.gridScale * (i + startX),
-                y: this.gridParams.gridScale * (i + startY),
-                gridX: this.gridParams.gridScale * i,
-                gridY: 10
-            });
-        }
-        return ret;
-    };
     D3ViewComponent.prototype._getStartPoints = function (gridLimit) {
         var ret = [];
-        for (var i = 0; i < gridLimit; i++) {
+        for (var i = 0; i <= gridLimit; i++) {
             ret.push({
                 x: i,
                 y: 0
@@ -282,16 +272,15 @@ var D3ViewComponent = /** @class */ (function () {
                 y: i
             });
         }
-        console.log(ret);
         return ret;
     };
     D3ViewComponent.prototype._drawHorizGridLine = function (yCoord) {
         var ret = [];
-        for (var i = 0; i < this.gridParams.gridLimit; i++) {
+        for (var i = 0; i <= this.gridParams.gridLimit; i++) {
             ret.push({
-                x: i * this.gridParams.gridScale,
+                x: (i + this.gridParams.leftBuffer) * this.gridParams.gridScale,
                 y: (yCoord + this.gridParams.topBuffer) * this.gridParams.gridScale,
-                gridX: i,
+                gridX: i + this.gridParams.leftBuffer,
                 gridY: yCoord + this.gridParams.topBuffer
             });
         }
@@ -299,15 +288,18 @@ var D3ViewComponent = /** @class */ (function () {
     };
     D3ViewComponent.prototype._drawVertGridLine = function (xCoord) {
         var ret = [];
-        for (var i = 0; i < this.gridParams.gridLimit; i++) {
+        for (var i = 0; i <= this.gridParams.gridLimit; i++) {
             ret.push({
                 x: (xCoord + this.gridParams.leftBuffer) * this.gridParams.gridScale,
-                y: i * this.gridParams.gridScale,
+                y: (i + this.gridParams.topBuffer) * this.gridParams.gridScale,
                 gridX: xCoord + this.gridParams.leftBuffer,
-                gridY: i
+                gridY: i + this.gridParams.topBuffer
             });
         }
         return ret;
+    };
+    D3ViewComponent.prototype._drawBoth = function () {
+        return this._drawVertGridLine(0).concat(this._drawHorizGridLine(0));
     };
     D3ViewComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
@@ -320,13 +312,6 @@ var D3ViewComponent = /** @class */ (function () {
     return D3ViewComponent;
 }());
 
-// return [1, 2, 3, 4, 5].reduce<Array<gridItem>>((accum, val) => {
-//   return accum.concat([{
-//     val: val,
-//     x: 10 * val,
-//     y: 0
-//   }])
-// }, []);
 
 
 /***/ }),
@@ -398,4 +383,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.23c6cfa41f8b8f70626e.js.map
+//# sourceMappingURL=main.db216e0935f796d5cb88.js.map
