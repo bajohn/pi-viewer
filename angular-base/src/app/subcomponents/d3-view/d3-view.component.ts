@@ -26,13 +26,16 @@ export class D3ViewComponent implements OnInit {
       .selectAll('path')
       .data(this._getStartPoints(this.gridParams.gridLimit)).enter().append('path')
 
-      // .attr('d', (d) => { 
-      //   console.log(d); 
-      //   this._lineFunc(d) })
       .attr('d', d => {
-        console.log(d);
         if (d.x === 0) {
-          return this._lineFunc(this._drawHorizGridLine(d.y))
+          if(d.y===0) {
+            return this._lineFunc(
+              this._drawHorizGridLine(d.y)
+              .concat(this._drawVertGridLine(d.x)))
+          } 
+          else {
+            return this._lineFunc(this._drawHorizGridLine(d.y))
+          }
         }
         else {
           return this._lineFunc(this._drawVertGridLine(d.x))
@@ -43,27 +46,9 @@ export class D3ViewComponent implements OnInit {
       .attr("fill", "none");
   }
 
-  private _getGridLine(startX: number, startY: number): Array<pv.gridItem> {
-
-
-
-
-    const ret: Array<pv.gridItem> = [];
-    for (let i = 0; i <= this.gridParams.gridLimit; i++) {
-      ret.push(
-        {
-          x: this.gridParams.gridScale * (i + startX),
-          y: this.gridParams.gridScale * (i + startY),
-          gridX: this.gridParams.gridScale * i,
-          gridY: 10
-        })
-    }
-    return ret;
-  }
-
   private _getStartPoints(gridLimit: number): Array<pv.coord> {
     const ret = [];
-    for (let i = 0; i < gridLimit; i++) {
+    for (let i = 0; i <= gridLimit; i++) {
       ret.push({
         x: i,
         y: 0
@@ -73,18 +58,17 @@ export class D3ViewComponent implements OnInit {
         y: i
       })
     }
-    console.log(ret);
     return ret;
   }
 
   private _drawHorizGridLine(yCoord: number): Array<pv.gridItem> {
     const ret = [];
-    for (let i = 0; i < this.gridParams.gridLimit; i++) {
+    for (let i = 0; i <= this.gridParams.gridLimit; i++) {
 
       ret.push({
-        x: i * this.gridParams.gridScale,
+        x: (i+ this.gridParams.leftBuffer) * this.gridParams.gridScale,
         y: (yCoord + this.gridParams.topBuffer) * this.gridParams.gridScale,
-        gridX: i,
+        gridX: i + this.gridParams.leftBuffer,
         gridY: yCoord + this.gridParams.topBuffer
       })
     }
@@ -93,30 +77,23 @@ export class D3ViewComponent implements OnInit {
 
   private _drawVertGridLine(xCoord: number): Array<pv.gridItem> {
     const ret = [];
-    for (let i = 0; i < this.gridParams.gridLimit; i++) {
+    for (let i = 0; i <= this.gridParams.gridLimit; i++) {
 
       ret.push({
         x: (xCoord + this.gridParams.leftBuffer) * this.gridParams.gridScale,
-        y:  i * this.gridParams.gridScale,
+        y:  (i + this.gridParams.topBuffer) * this.gridParams.gridScale,
         gridX: xCoord + this.gridParams.leftBuffer,
-        gridY: i
+        gridY: i +  this.gridParams.topBuffer
       })
     }
     return ret;
   }
 
+  _drawBoth(): Array<pv.gridItem> {
+    return this._drawVertGridLine(0).concat(this._drawHorizGridLine(0));
+  }
+
   private _lineFunc = d3.line()
     .x(function (d) { return d.x })
     .y(function (d) { return d.y })
-  //.curve(d3.curveLinear);
-
 }
-
-
-// return [1, 2, 3, 4, 5].reduce<Array<gridItem>>((accum, val) => {
-//   return accum.concat([{
-//     val: val,
-//     x: 10 * val,
-//     y: 0
-//   }])
-// }, []);

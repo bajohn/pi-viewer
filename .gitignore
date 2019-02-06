@@ -19,7 +19,6 @@ angular-base/node_modules
 
 # misc
 angular-base/npm-debug.log
-angular-base/package-lock.json
 
 # System Files
 .DS_Store

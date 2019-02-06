@@ -19,7 +19,7 @@ export namespace pv {
         gridScale = 20;
 
         topBuffer = 1;
-        leftBuffer = 1
+        leftBuffer = 10;
         constructor() { }
     }
 }
