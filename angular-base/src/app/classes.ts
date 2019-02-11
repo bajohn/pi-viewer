@@ -3,7 +3,8 @@ export namespace pv {
         x: number,
         y: number,
         gridX: number,
-        gridY: number
+        gridY: number,
+        color: string
     }
 
     export interface coord {

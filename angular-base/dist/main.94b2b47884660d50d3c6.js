@@ -228,48 +228,87 @@ __webpack_require__.r(__webpack_exports__);
 var D3ViewComponent = /** @class */ (function () {
     function D3ViewComponent() {
         this.gridParams = new _classes__WEBPACK_IMPORTED_MODULE_3__["pv"].gridParams();
+        this.curGrid = [];
         this._lineFunc = d3__WEBPACK_IMPORTED_MODULE_2__["line"]()
             .x(function (d) { return d.x; })
             .y(function (d) { return d.y; });
     }
     D3ViewComponent.prototype.ngOnInit = function () {
-        var _this = this;
+        this.curGrid = this._getStartPoints(this.gridParams.gridLimit);
         var chartId = 'd3-view';
-        var selection = d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#" + chartId)
+        var selection = this.selectSvgEl(chartId);
+        this.renderTo(selection);
+    };
+    D3ViewComponent.prototype.selectSvgEl = function (idIn) {
+        return d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#" + idIn)
             .append('svg')
             .attr('width', '100%')
             .attr('height', '100%');
-        var enterData = selection
+    };
+    D3ViewComponent.prototype.renderTo = function (selection) {
+        var _this = this;
+        selection
             .selectAll('path')
-            .data(this._getStartPoints(this.gridParams.gridLimit)).enter().append('path')
+            .data(this.curGrid).enter().append('path')
             .attr('d', function (d) {
-            if (d.x === 0) {
-                if (d.y === 0) {
-                    return _this._lineFunc(_this._drawHorizGridLine(d.y)
-                        .concat(_this._drawVertGridLine(d.x)));
+            if (d.gridX === 0) {
+                if (d.gridY === 0) {
+                    return _this._lineFunc(_this._drawHorizGridLine(d.gridY)
+                        .concat(_this._drawVertGridLine(d.gridX)));
                 }
                 else {
-                    return _this._lineFunc(_this._drawHorizGridLine(d.y));
+                    return _this._lineFunc(_this._drawHorizGridLine(d.gridY));
                 }
             }
             else {
-                return _this._lineFunc(_this._drawVertGridLine(d.x));
+                return _this._lineFunc(_this._drawVertGridLine(d.gridX));
             }
         })
-            .attr("stroke", "black")
+            .attr("stroke", function (d) { return d.color; })
             .attr("stroke-width", 2)
-            .attr("fill", "none");
+            .attr("fill", "none")
+            .on("mouseover", this.mouseOver)
+            .on("mouseout", this.mouseOut);
     };
+    D3ViewComponent.prototype.mouseOver = function (gridItem) {
+        var _this = this;
+        //console.log('event', event);
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](this).each(function (hoverEl) {
+            console.log(_this, hoverEl);
+            _this.curGrid.filter(function (testEl) {
+                return _this.gridElEq(hoverEl, testEl);
+            }).forEach(function (el) {
+                console.log('el found', el);
+            });
+        });
+    };
+    D3ViewComponent.prototype.gridElEq = function (gridEl1, gridEl2) {
+        return gridEl1.gridX === gridEl2.gridX && gridEl1.gridY === gridEl2.gridY;
+    };
+    D3ViewComponent.prototype.mouseOut = function (gridItem) {
+        // console.log('event', event,
+    };
+    // private _getCurGridItem(coord: pv.coord):pv.gridItem {
+    //   const x = coord.x;
+    //   const y = coord.y;
+    //   const gridX = Math.floor(x/this.gridParams.gridScale);
+    //   const gridY = Math.floor(y/this.gridParams.gridScale);
+    //   return {
+    //     x,y,gridX,gridY
+    //   }
+    // }
     D3ViewComponent.prototype._getStartPoints = function (gridLimit) {
         var ret = [];
         for (var i = 0; i <= gridLimit; i++) {
             ret.push({
-                x: i,
-                y: 0
+                gridX: i,
+                gridY: 0,
+                color: 'black'
             });
             ret.push({
-                x: 0,
-                y: i
+                gridX: 0,
+                gridY: i,
+                color: 'black'
             });
         }
         return ret;
@@ -383,4 +422,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.db216e0935f796d5cb88.js.map
+//# sourceMappingURL=main.94b2b47884660d50d3c6.js.map
