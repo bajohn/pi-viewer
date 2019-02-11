@@ -9,53 +9,97 @@ import { pv } from '../../classes'
 })
 export class D3ViewComponent implements OnInit {
   gridParams = new pv.gridParams();
+  curGrid = [];
   constructor() { }
 
   ngOnInit() {
 
-
+    this.curGrid = this._getStartPoints(this.gridParams.gridLimit);
     const chartId = 'd3-view';
-    const selection = d3.select(`#${chartId}`)
-      .append('svg')
-      .attr('width', '100%')
-      .attr('height', '100%')
+    const selection = this.selectSvgEl(chartId);
+    this.renderTo(selection);
 
 
-    var enterData = selection
 
+  }
+  selectSvgEl(idIn) {
+    return  d3.select(`#${idIn}`)
+    .append('svg')
+    .attr('width', '100%')
+    .attr('height', '100%')
+  }
+
+  renderTo(selection) {
+    selection
       .selectAll('path')
-      .data(this._getStartPoints(this.gridParams.gridLimit)).enter().append('path')
+      .data( this.curGrid).enter().append('path')
 
       .attr('d', d => {
-        if (d.x === 0) {
-          if(d.y===0) {
+        if (d.gridX === 0) {
+          if (d.gridY === 0) {
             return this._lineFunc(
-              this._drawHorizGridLine(d.y)
-              .concat(this._drawVertGridLine(d.x)))
-          } 
+              this._drawHorizGridLine(d.gridY)
+                .concat(this._drawVertGridLine(d.gridX)))
+          }
           else {
-            return this._lineFunc(this._drawHorizGridLine(d.y))
+            return this._lineFunc(this._drawHorizGridLine(d.gridY))
           }
         }
         else {
-          return this._lineFunc(this._drawVertGridLine(d.x))
+          return this._lineFunc(this._drawVertGridLine(d.gridX))
         }
       })
-      .attr("stroke", "black")
+      .attr("stroke", d => { return d.color })
       .attr("stroke-width", 2)
-      .attr("fill", "none");
+      .attr("fill", "none")
+      .on("mouseover", this.mouseOver)
+      .on("mouseout", this.mouseOut);
   }
 
-  private _getStartPoints(gridLimit: number): Array<pv.coord> {
+  mouseOver(gridItem: pv.gridItem) {
+    //console.log('event', event);
+    d3.select(this).each((hoverEl) => {
+      console.log(this, hoverEl);
+      this.curGrid.filter(testEl=>{
+        return this.gridElEq(hoverEl, testEl);
+      }).forEach((el)=>{
+        console.log('el found', el);
+      })
+    });
+  }
+
+  gridElEq(gridEl1, gridEl2) {
+    return gridEl1.gridX === gridEl2.gridX && gridEl1.gridY === gridEl2.gridY;
+  }
+
+  mouseOut(gridItem: pv.gridItem) {
+    // console.log('event', event,
+  }
+
+
+
+  // private _getCurGridItem(coord: pv.coord):pv.gridItem {
+  //   const x = coord.x;
+  //   const y = coord.y;
+  //   const gridX = Math.floor(x/this.gridParams.gridScale);
+  //   const gridY = Math.floor(y/this.gridParams.gridScale);
+  //   return {
+  //     x,y,gridX,gridY
+  //   }
+  // }
+
+  private _getStartPoints(gridLimit: number): Array<pv.gridItem> {
     const ret = [];
     for (let i = 0; i <= gridLimit; i++) {
       ret.push({
-        x: i,
-        y: 0
+        gridX: i,
+        gridY: 0,
+        color: 'black'
       })
       ret.push({
-        x: 0,
-        y: i
+        gridX: 0,
+        gridY: i,
+        color: 'black'
       })
     }
     return ret;
@@ -66,7 +110,7 @@ export class D3ViewComponent implements OnInit {
     for (let i = 0; i <= this.gridParams.gridLimit; i++) {
 
       ret.push({
-        x: (i+ this.gridParams.leftBuffer) * this.gridParams.gridScale,
+        x: (i + this.gridParams.leftBuffer) * this.gridParams.gridScale,
         y: (yCoord + this.gridParams.topBuffer) * this.gridParams.gridScale,
         gridX: i + this.gridParams.leftBuffer,
         gridY: yCoord + this.gridParams.topBuffer
@@ -81,9 +125,9 @@ export class D3ViewComponent implements OnInit {
 
       ret.push({
         x: (xCoord + this.gridParams.leftBuffer) * this.gridParams.gridScale,
-        y:  (i + this.gridParams.topBuffer) * this.gridParams.gridScale,
+        y: (i + this.gridParams.topBuffer) * this.gridParams.gridScale,
         gridX: xCoord + this.gridParams.leftBuffer,
-        gridY: i +  this.gridParams.topBuffer
+        gridY: i + this.gridParams.topBuffer
       })
     }
     return ret;
