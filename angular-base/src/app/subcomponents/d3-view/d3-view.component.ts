@@ -64,17 +64,20 @@ export class D3ViewComponent implements OnInit {
 
   mouseOver(this: HTMLElement, self: D3ViewComponent, d: pv.gridItem) {
 
-    //console.log('event', event);
     //console.log(d3.select(this).transition());
-    console.log(this, self, d);
+
     
     d3.select(this).each((hoverEl: pv.gridItem)=>{
-      console.log(d);
       const newGrid = d;
-      newGrid.color='gray';
+      
 
-      newGrid.gridX = d.gridX + 0.1;
-      newGrid.gridY = d.gridY + 0.1;
+      if(d.gridX===0){
+        newGrid.gridY = d.gridY + 0.1;
+      }
+      else {
+        newGrid.gridX = d.gridX + 0.1;
+      }
+
       // d3.select(this).remove();
       d3.select(this).attr('d', self.getLineFromGrid(newGrid));
       d3.select(this).attr('stroke',d => { return d.color });
