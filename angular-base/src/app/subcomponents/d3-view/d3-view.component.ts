@@ -84,24 +84,6 @@ export class D3ViewComponent implements OnInit {
       console.log(newGrid);
     
     })
-
-   //
-
-
-
-
-    // d3.select(this).each((hoverEl: HTMLElement ) => {
-    //  // console.log(this, hoverEl);
-    //   hoverEl.remove();
-      
-      
-
-    //   // this.curGrid.filter(testEl=>{
-    //   //   return this.gridElEq(hoverEl, testEl);
-    //   // }).forEach((el)=>{
-    //   //   console.log('el found', el);
-    //   // })
-    //});
   }
 
   gridElEq(gridEl1, gridEl2) {
