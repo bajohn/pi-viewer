@@ -40,8 +40,7 @@ export class D3ViewComponent implements OnInit {
       .attr("stroke", d => { return d.color })
       .attr("stroke-width", 2)
       .attr("fill", "none")
-      .on("mouseover", function(d) {self.mouseOver.call(this, self, d)})
-      .on("mouseout", this.mouseOut);
+      .on("mouseover", function(d) {self.mouseOver.call(this, self, d)});
   }
 
   getLineFromGrid(d:pv.gridItem) {
@@ -89,12 +88,6 @@ export class D3ViewComponent implements OnInit {
   gridElEq(gridEl1, gridEl2) {
     return gridEl1.gridX === gridEl2.gridX && gridEl1.gridY === gridEl2.gridY;
   }
-
-  mouseOut(gridItem: pv.gridItem) {
-    // console.log('event', event,
-  }
-
-
 
   // private _getCurGridItem(coord: pv.coord):pv.gridItem {
   //   const x = coord.x;
