@@ -9,6 +9,7 @@ import { pv } from '../../classes'
 })
 export class D3ViewComponent implements OnInit {
   gridParams = new pv.gridParams();
+
   curGrid = [];
   constructor() { }
 
@@ -30,42 +31,74 @@ export class D3ViewComponent implements OnInit {
   }
 
   renderTo(selection) {
+    const self = this;
     selection
       .selectAll('path')
       .data( this.curGrid).enter().append('path')
 
-      .attr('d', d => {
-        if (d.gridX === 0) {
-          if (d.gridY === 0) {
-            return this._lineFunc(
-              this._drawHorizGridLine(d.gridY)
-                .concat(this._drawVertGridLine(d.gridX)))
-          }
-          else {
-            return this._lineFunc(this._drawHorizGridLine(d.gridY))
-          }
-        }
-        else {
-          return this._lineFunc(this._drawVertGridLine(d.gridX))
-        }
-      })
+      .attr('d', this.getLineFromGrid.bind(this))
       .attr("stroke", d => { return d.color })
       .attr("stroke-width", 2)
       .attr("fill", "none")
-      .on("mouseover", this.mouseOver)
+      .on("mouseover", function(d) {self.mouseOver.call(this, self, d)})
       .on("mouseout", this.mouseOut);
   }
 
-  mouseOver(gridItem: pv.gridItem) {
+  getLineFromGrid(d:pv.gridItem) {
+
+      if (d.gridX === 0) {
+        if (d.gridY === 0) {
+          return this._lineFunc(
+            this._drawHorizGridLine(d.gridY)
+              .concat(this._drawVertGridLine(d.gridX)))
+        }
+        else {
+          return this._lineFunc(this._drawHorizGridLine(d.gridY))
+        }
+      }
+      else {
+        return this._lineFunc(this._drawVertGridLine(d.gridX))
+      }
+  
+    }
+
+  mouseOver(this: HTMLElement, self: D3ViewComponent, d: pv.gridItem) {
+
     //console.log('event', event);
-    d3.select(this).each((hoverEl) => {
-      console.log(this, hoverEl);
-      this.curGrid.filter(testEl=>{
-        return this.gridElEq(hoverEl, testEl);
-      }).forEach((el)=>{
-        console.log('el found', el);
-      })
-    });
+    //console.log(d3.select(this).transition());
+    console.log(this, self, d);
+    
+    d3.select(this).each((hoverEl: pv.gridItem)=>{
+      console.log(d);
+      const newGrid = d;
+      newGrid.color='gray';
+
+      newGrid.gridX = d.gridX + 0.1;
+      newGrid.gridY = d.gridY + 0.1;
+      // d3.select(this).remove();
+      d3.select(this).attr('d', self.getLineFromGrid(newGrid));
+      d3.select(this).attr('stroke',d => { return d.color });
+      console.log(newGrid);
+    
+    })
+
+   //
+
+
+
+
+    // d3.select(this).each((hoverEl: HTMLElement ) => {
+    //  // console.log(this, hoverEl);
+    //   hoverEl.remove();
+      
+      
+
+    //   // this.curGrid.filter(testEl=>{
+    //   //   return this.gridElEq(hoverEl, testEl);
+    //   // }).forEach((el)=>{
+    //   //   console.log('el found', el);
+    //   // })
+    //});
   }
 
   gridElEq(gridEl1, gridEl2) {

@@ -74,7 +74,7 @@ module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h1>\n    PI Viewer Sample App\n  </h1>\n  <app-d3-view>\n    \n  </app-d3-view>\n<router-outlet></router-outlet>\n"
+module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h1>\n    <!-- PI Viewer Sample App -->\n  </h1>\n  <app-d3-view>\n    \n  </app-d3-view>\n<router-outlet></router-outlet>\n"
 
 /***/ }),
 
@@ -246,41 +246,57 @@ var D3ViewComponent = /** @class */ (function () {
             .attr('height', '100%');
     };
     D3ViewComponent.prototype.renderTo = function (selection) {
-        var _this = this;
+        var self = this;
         selection
             .selectAll('path')
             .data(this.curGrid).enter().append('path')
-            .attr('d', function (d) {
-            if (d.gridX === 0) {
-                if (d.gridY === 0) {
-                    return _this._lineFunc(_this._drawHorizGridLine(d.gridY)
-                        .concat(_this._drawVertGridLine(d.gridX)));
-                }
-                else {
-                    return _this._lineFunc(_this._drawHorizGridLine(d.gridY));
-                }
-            }
-            else {
-                return _this._lineFunc(_this._drawVertGridLine(d.gridX));
-            }
-        })
+            .attr('d', this.getLineFromGrid.bind(this))
             .attr("stroke", function (d) { return d.color; })
             .attr("stroke-width", 2)
             .attr("fill", "none")
-            .on("mouseover", this.mouseOver)
+            .on("mouseover", function (d) { self.mouseOver.call(this, self, d); })
             .on("mouseout", this.mouseOut);
     };
-    D3ViewComponent.prototype.mouseOver = function (gridItem) {
+    D3ViewComponent.prototype.getLineFromGrid = function (d) {
+        if (d.gridX === 0) {
+            if (d.gridY === 0) {
+                return this._lineFunc(this._drawHorizGridLine(d.gridY)
+                    .concat(this._drawVertGridLine(d.gridX)));
+            }
+            else {
+                return this._lineFunc(this._drawHorizGridLine(d.gridY));
+            }
+        }
+        else {
+            return this._lineFunc(this._drawVertGridLine(d.gridX));
+        }
+    };
+    D3ViewComponent.prototype.mouseOver = function (self, d) {
         var _this = this;
         //console.log('event', event);
+        //console.log(d3.select(this).transition());
+        console.log(this, self, d);
         d3__WEBPACK_IMPORTED_MODULE_2__["select"](this).each(function (hoverEl) {
-            console.log(_this, hoverEl);
-            _this.curGrid.filter(function (testEl) {
-                return _this.gridElEq(hoverEl, testEl);
-            }).forEach(function (el) {
-                console.log('el found', el);
-            });
+            console.log(d);
+            var newGrid = d;
+            newGrid.color = 'gray';
+            newGrid.gridX = d.gridX + 0.1;
+            newGrid.gridY = d.gridY + 0.1;
+            // d3.select(this).remove();
+            d3__WEBPACK_IMPORTED_MODULE_2__["select"](_this).attr('d', self.getLineFromGrid(newGrid));
+            d3__WEBPACK_IMPORTED_MODULE_2__["select"](_this).attr('stroke', function (d) { return d.color; });
+            console.log(newGrid);
         });
+        //
+        // d3.select(this).each((hoverEl: HTMLElement ) => {
+        //  // console.log(this, hoverEl);
+        //   hoverEl.remove();
+        //   // this.curGrid.filter(testEl=>{
+        //   //   return this.gridElEq(hoverEl, testEl);
+        //   // }).forEach((el)=>{
+        //   //   console.log('el found', el);
+        //   // })
+        //});
     };
     D3ViewComponent.prototype.gridElEq = function (gridEl1, gridEl2) {
         return gridEl1.gridX === gridEl2.gridX && gridEl1.gridY === gridEl2.gridY;
@@ -422,4 +438,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.94b2b47884660d50d3c6.js.map
+//# sourceMappingURL=main.2bb3a180859e67ac2128.js.map
