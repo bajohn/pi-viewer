@@ -74,7 +74,7 @@ module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<!--The content below is only a placeholder and can be replaced.-->\n<div style=\"text-align:center\">\n  <h1>\n    <!-- PI Viewer Sample App -->\n  </h1>\n  <app-d3-view>\n    \n  </app-d3-view>\n<router-outlet></router-outlet>\n"
+module.exports = "<!--The content below is only a placeholder and can be replaced.-->\r\n<div style=\"text-align:center\">\r\n  <h1>\r\n    <!-- PI Viewer Sample App -->\r\n  </h1>\r\n  <app-d3-view>\r\n    \r\n  </app-d3-view>\r\n<router-outlet></router-outlet>\r\n"
 
 /***/ }),
 
@@ -203,7 +203,7 @@ module.exports = ".d3-view {\r\n    width: 100%;\r\n    height: 1000px;\r\n}\r\n
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "\n\n<div id=\"d3-view\" class=\"d3-view\">\n\n</div>"
+module.exports = "\r\n\r\n<div id=\"d3-view\" class=\"d3-view\">\r\n\r\n</div>"
 
 /***/ }),
 
@@ -246,25 +246,33 @@ var D3ViewComponent = /** @class */ (function () {
             .attr('height', '100%');
     };
     D3ViewComponent.prototype.renderTo = function (selection) {
+        var _this = this;
         var self = this;
         selection
             .selectAll('path')
             .data(this.curGrid).enter().append('path')
-            .attr('d', this.getLineFromGrid.bind(this))
+            .attr('d', function (d) { return _this.getLineFromGrid(d, false); })
             .attr("stroke", function (d) { return d.color; })
             .attr("stroke-width", 2)
             .attr("fill", "none")
-            .on("mouseover", function (d) { self.mouseOver.call(this, self, d); })
-            .on("mouseout", this.mouseOut);
+            .on("mouseover", function (d) { self.mouseOver.call(this, self, d); });
     };
-    D3ViewComponent.prototype.getLineFromGrid = function (d) {
+    D3ViewComponent.prototype.getLineFromGrid = function (d, isCurve) {
+        //isCurve = typeof isCurve === 'undefined' ? false: isCurve;
         if (d.gridX === 0) {
             if (d.gridY === 0) {
                 return this._lineFunc(this._drawHorizGridLine(d.gridY)
                     .concat(this._drawVertGridLine(d.gridX)));
             }
             else {
-                return this._lineFunc(this._drawHorizGridLine(d.gridY));
+                if (isCurve) {
+                    console.log(isCurve);
+                    //todo:this is untested!!
+                    return this._lineFunc(this._drawHorizCurveLine(d.gridY, 1));
+                }
+                else {
+                    return this._lineFunc(this._drawHorizGridLine(d.gridY));
+                }
             }
         }
         else {
@@ -283,7 +291,7 @@ var D3ViewComponent = /** @class */ (function () {
                 newGrid.gridX = d.gridX + 0.1;
             }
             // d3.select(this).remove();
-            d3__WEBPACK_IMPORTED_MODULE_2__["select"](_this).attr('d', self.getLineFromGrid(newGrid));
+            d3__WEBPACK_IMPORTED_MODULE_2__["select"](_this).attr('d', self.getLineFromGrid(newGrid, true));
             d3__WEBPACK_IMPORTED_MODULE_2__["select"](_this).attr('stroke', function (d) { return d.color; });
             console.log(newGrid);
         });
@@ -304,14 +312,33 @@ var D3ViewComponent = /** @class */ (function () {
         var ret = [];
         for (var i = 0; i <= gridLimit; i++) {
             ret.push({
+                x: i * this.gridParams.gridScale,
+                y: 0,
                 gridX: i,
                 gridY: 0,
                 color: 'black'
             });
             ret.push({
+                x: 0,
+                y: i * this.gridParams.gridScale,
                 gridX: 0,
                 gridY: i,
                 color: 'black'
+            });
+        }
+        return ret;
+    };
+    D3ViewComponent.prototype._drawHorizCurveLine = function (yCoord, xCenter) {
+        var ret = [];
+        var maxDev = .2;
+        var gridLimit = this.gridParams.gridLimit;
+        for (var i = 0; i < gridLimit; i++) {
+            var curDev = i + Math.abs(maxDev * (i - xCenter) / gridLimit);
+            ret.push({
+                x: (i + this.gridParams.leftBuffer) * this.gridParams.gridScale,
+                y: (yCoord + this.gridParams.topBuffer + curDev) * this.gridParams.gridScale,
+                gridX: i + this.gridParams.leftBuffer,
+                gridY: yCoord + this.gridParams.topBuffer
             });
         }
         return ret;
@@ -425,4 +452,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.d92a7d748f2a338cc138.js.map
+//# sourceMappingURL=main.b2f661ae391d77246440.js.map

@@ -36,14 +36,16 @@ export class D3ViewComponent implements OnInit {
       .selectAll('path')
       .data( this.curGrid).enter().append('path')
 
-      .attr('d', this.getLineFromGrid.bind(this))
+      .attr('d',  (d)=>{return this.getLineFromGrid(d, false)} )
       .attr("stroke", d => { return d.color })
       .attr("stroke-width", 2)
       .attr("fill", "none")
       .on("mouseover", function(d) {self.mouseOver.call(this, self, d)});
   }
 
-  getLineFromGrid(d:pv.gridItem) {
+  getLineFromGrid(d:pv.gridItem, isCurve: boolean) {
+
+    //isCurve = typeof isCurve === 'undefined' ? false: isCurve;
 
       if (d.gridX === 0) {
         if (d.gridY === 0) {
@@ -52,13 +54,20 @@ export class D3ViewComponent implements OnInit {
               .concat(this._drawVertGridLine(d.gridX)))
         }
         else {
-          return this._lineFunc(this._drawHorizGridLine(d.gridY))
+          if(isCurve){
+            console.log(isCurve);
+            //todo:this is untested!!
+            return this._lineFunc(this._drawHorizCurveLine(d.gridY, 1))
+          }
+          else {
+            return this._lineFunc(this._drawHorizGridLine(d.gridY))
+          }
+
         }
       }
       else {
         return this._lineFunc(this._drawVertGridLine(d.gridX))
       }
-  
     }
 
   mouseOver(this: HTMLElement, self: D3ViewComponent, d: pv.gridItem) {
@@ -78,7 +87,7 @@ export class D3ViewComponent implements OnInit {
       }
 
       // d3.select(this).remove();
-      d3.select(this).attr('d', self.getLineFromGrid(newGrid));
+      d3.select(this).attr('d', self.getLineFromGrid(newGrid, true));
       d3.select(this).attr('stroke',d => { return d.color });
       console.log(newGrid);
     
@@ -103,14 +112,34 @@ export class D3ViewComponent implements OnInit {
     const ret = [];
     for (let i = 0; i <= gridLimit; i++) {
       ret.push({
+        x: i * this.gridParams.gridScale,
+        y: 0,
         gridX: i,
         gridY: 0,
         color: 'black'
       })
       ret.push({
+        x: 0,
+        y: i * this.gridParams.gridScale,
         gridX: 0,
         gridY: i,
         color: 'black'
+      })
+    }
+    return ret;
+  }
+
+  private _drawHorizCurveLine(yCoord: number, xCenter: number): Array<pv.gridItem> {
+    const ret = [];
+    const maxDev = .2;
+    const gridLimit = this.gridParams.gridLimit;
+    for (let i = 0; i < gridLimit; i++) {
+      const curDev = i + Math.abs(maxDev *( i - xCenter) / gridLimit );
+      ret.push({
+        x: (i + this.gridParams.leftBuffer) * this.gridParams.gridScale,
+        y: (yCoord + this.gridParams.topBuffer + curDev ) * this.gridParams.gridScale,
+        gridX: i + this.gridParams.leftBuffer,
+        gridY: yCoord + this.gridParams.topBuffer
       })
     }
     return ret;
