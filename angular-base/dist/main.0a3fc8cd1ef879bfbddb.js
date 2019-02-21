@@ -74,7 +74,7 @@ module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<!--The content below is only a placeholder and can be replaced.-->\r\n<div style=\"text-align:center\">\r\n  <h1>\r\n    <!-- PI Viewer Sample App -->\r\n  </h1>\r\n  <app-d3-view>\r\n    \r\n  </app-d3-view>\r\n<router-outlet></router-outlet>\r\n"
+module.exports = "<!--The content below is only a placeholder and can be replaced.-->\r\n<div style=\"text-align:center\">\r\n  <h1>\r\n    <!-- PI Viewer Sample App -->\r\n  </h1>\r\n  <app-d3-view-stateful>\r\n\r\n  </app-d3-view-stateful>\r\n<router-outlet></router-outlet>\r\n"
 
 /***/ }),
 
@@ -126,6 +126,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app-routing.module */ "./src/app/app-routing.module.ts");
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
 /* harmony import */ var _subcomponents_d3_view_d3_view_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./subcomponents/d3-view/d3-view.component */ "./src/app/subcomponents/d3-view/d3-view.component.ts");
+/* harmony import */ var _subcomponents_d3_view_stateful_d3_view_stateful_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./subcomponents/d3-view-stateful/d3-view-stateful.component */ "./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.ts");
+
 
 
 
@@ -139,7 +141,8 @@ var AppModule = /** @class */ (function () {
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_2__["NgModule"])({
             declarations: [
                 _app_component__WEBPACK_IMPORTED_MODULE_4__["AppComponent"],
-                _subcomponents_d3_view_d3_view_component__WEBPACK_IMPORTED_MODULE_5__["D3ViewComponent"]
+                _subcomponents_d3_view_d3_view_component__WEBPACK_IMPORTED_MODULE_5__["D3ViewComponent"],
+                _subcomponents_d3_view_stateful_d3_view_stateful_component__WEBPACK_IMPORTED_MODULE_6__["D3ViewStatefulComponent"]
             ],
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"],
@@ -185,6 +188,151 @@ var pv;
 
 /***/ }),
 
+/***/ "./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.css":
+/*!*******************************************************************************!*\
+  !*** ./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.css ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJzcmMvYXBwL3N1YmNvbXBvbmVudHMvZDMtdmlldy1zdGF0ZWZ1bC9kMy12aWV3LXN0YXRlZnVsLmNvbXBvbmVudC5jc3MifQ== */"
+
+/***/ }),
+
+/***/ "./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.html":
+/*!********************************************************************************!*\
+  !*** ./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.html ***!
+  \********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = "<div id=\"d3-view\" class=\"d3-view\">\n\n</div>"
+
+/***/ }),
+
+/***/ "./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.ts":
+/*!******************************************************************************!*\
+  !*** ./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.ts ***!
+  \******************************************************************************/
+/*! exports provided: D3ViewStatefulComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "D3ViewStatefulComponent", function() { return D3ViewStatefulComponent; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+
+
+
+var D3ViewStatefulComponent = /** @class */ (function () {
+    function D3ViewStatefulComponent() {
+        this._self = this;
+        this.curGridState = [];
+        this._generateLine = d3__WEBPACK_IMPORTED_MODULE_2__["line"]()
+            .x(function (d) { return d.x; })
+            .y(function (d) { return d.y; });
+    }
+    D3ViewStatefulComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.curGridState = [
+            //this._gridElInitializer(1, 0),
+            this._gridElInitializer(1, 0),
+        ];
+        var chartId = 'd3-view';
+        var selection = this.selectSvgEl(chartId);
+        this.renderTo(selection);
+        setInterval(function () {
+            _this.curGridState[0].pts.map(function (el) {
+                el.x += 1;
+            });
+            _this.update(selection);
+        }, 10);
+    };
+    D3ViewStatefulComponent.prototype.selectSvgEl = function (idIn) {
+        return d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#" + idIn)
+            .append('svg')
+            .attr('width', '100%')
+            .attr('height', '100%');
+    };
+    D3ViewStatefulComponent.prototype.renderTo = function (selection) {
+        this.curGridState = this.curGridState.concat(this.curGridState);
+        selection
+            .selectAll('path')
+            .data(this.curGridState).enter().append('path')
+            .attr('d', function (d) { console.log(d); return d._line(d.pts); })
+            .attr("stroke", function (d) { return 'black'; })
+            .attr("stroke-width", 2)
+            .attr("fill", "none");
+    };
+    D3ViewStatefulComponent.prototype.update = function (selection) {
+        selection
+            .selectAll('path')
+            .each(function (el) {
+            el.pts.map(function (el) {
+                el.x = 100 + 10 * Math.sin((new Date).getTime() / 1000);
+            });
+        })
+            .attr('d', function (d) { console.log(d); return d._line(d.pts); });
+        // .attr("stroke", d => { return 'black' })
+        // .attr("stroke-width", 2)
+        // .attr("fill", "none")
+    };
+    D3ViewStatefulComponent.prototype._gridElInitializer = function (gridBaseX, gridBaseY) {
+        return {
+            gridBaseX: gridBaseX,
+            gridBaseY: gridBaseY,
+            pts: this._generatePts(gridBaseX, gridBaseY),
+            _line: this._generateLine
+        };
+    };
+    D3ViewStatefulComponent.prototype._generatePts = function (gridBaseX, gridBaseY) {
+        var ret = [];
+        for (var i = 0; i <= 20; i++) {
+            if (gridBaseX === 0) {
+                if (gridBaseY === 0) {
+                    // topleft / top right borders. deal later
+                }
+                else {
+                    // horizontal
+                    ret.push({
+                        gridX: gridBaseX,
+                        gridY: gridBaseX,
+                        x: 10 * gridBaseX,
+                        y: 10 * (gridBaseY + i),
+                        color: 'black'
+                    });
+                }
+            }
+            else {
+                // vertical line
+                ret.push({
+                    gridX: gridBaseX,
+                    gridY: gridBaseX,
+                    x: 10 * gridBaseX,
+                    y: 10 * (gridBaseY + i),
+                    color: 'black'
+                });
+            }
+        }
+        return ret;
+    };
+    D3ViewStatefulComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
+            selector: 'app-d3-view-stateful',
+            template: __webpack_require__(/*! ./d3-view-stateful.component.html */ "./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.html"),
+            styles: [__webpack_require__(/*! ./d3-view-stateful.component.css */ "./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.css")]
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+    ], D3ViewStatefulComponent);
+    return D3ViewStatefulComponent;
+}());
+
+
+
+/***/ }),
+
 /***/ "./src/app/subcomponents/d3-view/d3-view.component.css":
 /*!*************************************************************!*\
   !*** ./src/app/subcomponents/d3-view/d3-view.component.css ***!
@@ -203,7 +351,7 @@ module.exports = ".d3-view {\r\n    width: 100%;\r\n    height: 1000px;\r\n}\r\n
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "\r\n\r\n<div id=\"d3-view\" class=\"d3-view\">\r\n\r\n</div>"
+module.exports = "<div id=\"d3-view\" class=\"d3-view\">\r\n\r\n</div>"
 
 /***/ }),
 
@@ -452,4 +600,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.b2f661ae391d77246440.js.map
+//# sourceMappingURL=main.0a3fc8cd1ef879bfbddb.js.map
