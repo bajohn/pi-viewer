@@ -1,12 +1,11 @@
 export namespace pv {
     export interface gridItem {
-        x: number,
-        y: number,
-        gridX: number,
-        gridY: number,
-        color: string
+        // line: returns d3.line() , don't care about specifics
+        _line: (gridIn: Array<pv.coord>) => { any },
+        pts: Array<pv.coord>,
+        gridBaseX: number,
+        gridBaseY: number
     }
-
     export interface coord {
         x: number,
         y: number

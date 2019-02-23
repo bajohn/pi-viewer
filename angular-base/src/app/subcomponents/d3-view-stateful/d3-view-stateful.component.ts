@@ -11,26 +11,16 @@ export class D3ViewStatefulComponent implements OnInit {
 
   constructor() { }
   _self = this;
-  curGridState: Array<{
-    // line: returns d3.line() , don't care about specifics
-    _line: (gridIn: Array<pv.gridItem>) => { any },
-    pts: Array<pv.gridItem>,
-    gridBaseX: number,
-    gridBaseY: number
-  }> = []
+  curGridState: Array<pv.gridItem> = []
 
   ngOnInit() {
-    this.curGridState = [
-      //this._gridElInitializer(1, 0),
-      this._gridElInitializer(1, 0),
-
-    ]
+    this.curGridState = this._generateCoord();
     const chartId = 'd3-view';
     const selection = this._selectSvgEl(chartId);
     this._renderTo(selection);
-    setInterval(() => {
-      this._update(selection);
-    }, 10);
+    // setInterval(() => {
+    //   this._update(selection);
+    // }, 10);
   }
   private _selectSvgEl(idIn) {
     return d3.select(`#${idIn}`)
@@ -39,6 +29,7 @@ export class D3ViewStatefulComponent implements OnInit {
       .attr('height', '100%')
   }
 
+  // Default rendering
   private _renderTo(selection) {
 
     this.curGridState = this.curGridState.concat(this.curGridState);
@@ -49,7 +40,7 @@ export class D3ViewStatefulComponent implements OnInit {
       .attr('d', (d) => { console.log(d); return d._line(d.pts); })
       .attr("stroke", d => { return 'black' })
       .attr("stroke-width", 2)
-      .attr("fill", "none")
+      .attr("fill", "none");
 
   }
 
@@ -64,7 +55,19 @@ export class D3ViewStatefulComponent implements OnInit {
       .attr('d', (d) => { console.log(d); return d._line(d.pts); });
   }
 
-  private _gridElInitializer(gridBaseX: number, gridBaseY: number) {
+  // generate all grid base coordinates
+  private _generateCoord() {
+    const retGridState: Array<pv.gridItem> = []
+    for (let i = 1; i <= 20; i++) {
+      retGridState.push(this._gridElInitializer(0, i));
+      retGridState.push(this._gridElInitializer(i, 0));
+    }
+    return retGridState;
+  }
+
+  // for a given base coordinate (like 0,1 or 5,0), return a default gridItem
+  // with needed pts.
+  private _gridElInitializer(gridBaseX: number, gridBaseY: number): pv.gridItem {
     return {
       gridBaseX: gridBaseX,
       gridBaseY: gridBaseY,
@@ -73,14 +76,15 @@ export class D3ViewStatefulComponent implements OnInit {
     }
 
   }
-
+  // returns d3 line generating function
   private _generateLine = d3.line()
     .x(function (d) { return d.x })
     .y(function (d) { return d.y })
 
-  // 
-  private _generateGridPts(gridBaseX: number, gridBaseY: number): Array<pv.gridItem> {
-    const ret: Array<pv.gridItem> = [];
+  // for a given base coordinate (like 0,1 or 5,0), return all points needed
+  // to render the default grid.
+  private _generateGridPts(gridBaseX: number, gridBaseY: number): Array<pv.coord> {
+    const ret: Array<pv.coord> = [];
 
     for (let i = 0; i <= 20; i++) {
       if (gridBaseX === 0) {
@@ -90,24 +94,18 @@ export class D3ViewStatefulComponent implements OnInit {
         else {
           // horizontal
           ret.push({
-            gridX: gridBaseX,
-            gridY: gridBaseX,
-            x: 10 * gridBaseX,
-            y: 10 * (gridBaseY + i),
-            color: 'black'
-          })
+            x: 10 * (gridBaseX + i),
+            y: 10 * gridBaseY,
+          });
         }
 
       }
       else {
         // vertical line
         ret.push({
-          gridX: gridBaseX,
-          gridY: gridBaseX,
           x: 10 * gridBaseX,
           y: 10 * (gridBaseY + i),
-          color: 'black'
-        })
+        });
       }
     }
 

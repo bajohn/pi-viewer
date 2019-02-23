@@ -198,22 +198,19 @@ var D3ViewStatefulComponent = /** @class */ (function () {
     function D3ViewStatefulComponent() {
         this._self = this;
         this.curGridState = [];
+        // returns d3 line generating function
         this._generateLine = d3__WEBPACK_IMPORTED_MODULE_2__["line"]()
             .x(function (d) { return d.x; })
             .y(function (d) { return d.y; });
     }
     D3ViewStatefulComponent.prototype.ngOnInit = function () {
-        var _this = this;
-        this.curGridState = [
-            //this._gridElInitializer(1, 0),
-            this._gridElInitializer(1, 0),
-        ];
+        this.curGridState = this._generateCoord();
         var chartId = 'd3-view';
         var selection = this._selectSvgEl(chartId);
         this._renderTo(selection);
-        setInterval(function () {
-            _this._update(selection);
-        }, 10);
+        // setInterval(() => {
+        //   this._update(selection);
+        // }, 10);
     };
     D3ViewStatefulComponent.prototype._selectSvgEl = function (idIn) {
         return d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#" + idIn)
@@ -221,6 +218,7 @@ var D3ViewStatefulComponent = /** @class */ (function () {
             .attr('width', '100%')
             .attr('height', '100%');
     };
+    // Default rendering
     D3ViewStatefulComponent.prototype._renderTo = function (selection) {
         this.curGridState = this.curGridState.concat(this.curGridState);
         selection
@@ -241,6 +239,17 @@ var D3ViewStatefulComponent = /** @class */ (function () {
         })
             .attr('d', function (d) { console.log(d); return d._line(d.pts); });
     };
+    // generate all grid base coordinates
+    D3ViewStatefulComponent.prototype._generateCoord = function () {
+        var retGridState = [];
+        for (var i = 1; i <= 20; i++) {
+            retGridState.push(this._gridElInitializer(0, i));
+            retGridState.push(this._gridElInitializer(i, 0));
+        }
+        return retGridState;
+    };
+    // for a given base coordinate (like 0,1 or 5,0), return a default gridItem
+    // with needed pts.
     D3ViewStatefulComponent.prototype._gridElInitializer = function (gridBaseX, gridBaseY) {
         return {
             gridBaseX: gridBaseX,
@@ -249,7 +258,8 @@ var D3ViewStatefulComponent = /** @class */ (function () {
             _line: this._generateLine
         };
     };
-    // 
+    // for a given base coordinate (like 0,1 or 5,0), return all points needed
+    // to render the default grid.
     D3ViewStatefulComponent.prototype._generateGridPts = function (gridBaseX, gridBaseY) {
         var ret = [];
         for (var i = 0; i <= 20; i++) {
@@ -260,22 +270,16 @@ var D3ViewStatefulComponent = /** @class */ (function () {
                 else {
                     // horizontal
                     ret.push({
-                        gridX: gridBaseX,
-                        gridY: gridBaseX,
-                        x: 10 * gridBaseX,
-                        y: 10 * (gridBaseY + i),
-                        color: 'black'
+                        x: 10 * (gridBaseX + i),
+                        y: 10 * gridBaseY,
                     });
                 }
             }
             else {
                 // vertical line
                 ret.push({
-                    gridX: gridBaseX,
-                    gridY: gridBaseX,
                     x: 10 * gridBaseX,
                     y: 10 * (gridBaseY + i),
-                    color: 'black'
                 });
             }
         }
@@ -363,4 +367,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.8bbe533d39890aa4e50d.js.map
+//# sourceMappingURL=main.639cd5b110eec4e43751.js.map
