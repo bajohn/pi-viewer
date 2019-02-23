@@ -38,8 +38,8 @@ export class D3ViewStatefulComponent implements OnInit {
       .data(this.curGridState).enter().append('path')
 
       .attr('d', (d) => { console.log(d); return d._line(d.pts); })
-      .attr("stroke", d => { return 'black' })
-      .attr("stroke-width", 2)
+      .attr("stroke", d => { return 'rgba(112, 112, 112, 1)' })
+      .attr("stroke-width", 1)
       .attr("fill", "none");
 
   }
