@@ -26,30 +26,25 @@ export class D3ViewStatefulComponent implements OnInit {
 
     ]
     const chartId = 'd3-view';
-    const selection = this.selectSvgEl(chartId);
-    this.renderTo(selection);
+    const selection = this._selectSvgEl(chartId);
+    this._renderTo(selection);
     setInterval(() => {
-      this.curGridState[0].pts.map(el => {
-        el.x += 1;
-
-      })
-
-      this.update(selection);
+      this._update(selection);
     }, 10);
   }
-  selectSvgEl(idIn) {
+  private _selectSvgEl(idIn) {
     return d3.select(`#${idIn}`)
       .append('svg')
       .attr('width', '100%')
       .attr('height', '100%')
   }
 
-  renderTo(selection) {
+  private _renderTo(selection) {
 
     this.curGridState = this.curGridState.concat(this.curGridState);
     selection
       .selectAll('path')
-      .data( this.curGridState).enter().append('path')
+      .data(this.curGridState).enter().append('path')
 
       .attr('d', (d) => { console.log(d); return d._line(d.pts); })
       .attr("stroke", d => { return 'black' })
@@ -58,27 +53,22 @@ export class D3ViewStatefulComponent implements OnInit {
 
   }
 
-  update(selection) {
+  private _update(selection) {
     selection
-    .selectAll('path')
-    .each(el=>{
-      el.pts.map(el=>{
-        el.x = 100 + 10 * Math.sin((new Date).getTime()/1000 );
+      .selectAll('path')
+      .each(el => {
+        el.pts.map(el => {
+          el.x = 100 + 10 * Math.sin((new Date).getTime() / 1000);
+        })
       })
-    })
-  
-    .attr('d', (d) => { console.log(d); return d._line(d.pts); })
-    // .attr("stroke", d => { return 'black' })
-    // .attr("stroke-width", 2)
-    // .attr("fill", "none")
-
+      .attr('d', (d) => { console.log(d); return d._line(d.pts); });
   }
 
   private _gridElInitializer(gridBaseX: number, gridBaseY: number) {
     return {
       gridBaseX: gridBaseX,
       gridBaseY: gridBaseY,
-      pts: this._generatePts(gridBaseX, gridBaseY),
+      pts: this._generateGridPts(gridBaseX, gridBaseY),
       _line: this._generateLine
     }
 
@@ -88,7 +78,8 @@ export class D3ViewStatefulComponent implements OnInit {
     .x(function (d) { return d.x })
     .y(function (d) { return d.y })
 
-  private _generatePts(gridBaseX: number, gridBaseY: number): Array<pv.gridItem> {
+  // 
+  private _generateGridPts(gridBaseX: number, gridBaseY: number): Array<pv.gridItem> {
     const ret: Array<pv.gridItem> = [];
 
     for (let i = 0; i <= 20; i++) {

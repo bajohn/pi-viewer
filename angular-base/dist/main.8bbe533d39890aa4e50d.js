@@ -125,9 +125,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _app_routing_module__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./app-routing.module */ "./src/app/app-routing.module.ts");
 /* harmony import */ var _app_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./app.component */ "./src/app/app.component.ts");
-/* harmony import */ var _subcomponents_d3_view_d3_view_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./subcomponents/d3-view/d3-view.component */ "./src/app/subcomponents/d3-view/d3-view.component.ts");
-/* harmony import */ var _subcomponents_d3_view_stateful_d3_view_stateful_component__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./subcomponents/d3-view-stateful/d3-view-stateful.component */ "./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.ts");
-
+/* harmony import */ var _subcomponents_d3_view_stateful_d3_view_stateful_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./subcomponents/d3-view-stateful/d3-view-stateful.component */ "./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.ts");
 
 
 
@@ -141,8 +139,7 @@ var AppModule = /** @class */ (function () {
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_2__["NgModule"])({
             declarations: [
                 _app_component__WEBPACK_IMPORTED_MODULE_4__["AppComponent"],
-                _subcomponents_d3_view_d3_view_component__WEBPACK_IMPORTED_MODULE_5__["D3ViewComponent"],
-                _subcomponents_d3_view_stateful_d3_view_stateful_component__WEBPACK_IMPORTED_MODULE_6__["D3ViewStatefulComponent"]
+                _subcomponents_d3_view_stateful_d3_view_stateful_component__WEBPACK_IMPORTED_MODULE_5__["D3ViewStatefulComponent"]
             ],
             imports: [
                 _angular_platform_browser__WEBPACK_IMPORTED_MODULE_1__["BrowserModule"],
@@ -155,35 +152,6 @@ var AppModule = /** @class */ (function () {
     return AppModule;
 }());
 
-
-
-/***/ }),
-
-/***/ "./src/app/classes.ts":
-/*!****************************!*\
-  !*** ./src/app/classes.ts ***!
-  \****************************/
-/*! exports provided: pv */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pv", function() { return pv; });
-var pv;
-(function (pv) {
-    var gridParams = /** @class */ (function () {
-        function gridParams() {
-            // number of grid squares across
-            this.gridLimit = 20;
-            // pixels per grid square
-            this.gridScale = 20;
-            this.topBuffer = 1;
-            this.leftBuffer = 10;
-        }
-        return gridParams;
-    }());
-    pv.gridParams = gridParams;
-})(pv || (pv = {}));
 
 
 /***/ }),
@@ -241,22 +209,19 @@ var D3ViewStatefulComponent = /** @class */ (function () {
             this._gridElInitializer(1, 0),
         ];
         var chartId = 'd3-view';
-        var selection = this.selectSvgEl(chartId);
-        this.renderTo(selection);
+        var selection = this._selectSvgEl(chartId);
+        this._renderTo(selection);
         setInterval(function () {
-            _this.curGridState[0].pts.map(function (el) {
-                el.x += 1;
-            });
-            _this.update(selection);
+            _this._update(selection);
         }, 10);
     };
-    D3ViewStatefulComponent.prototype.selectSvgEl = function (idIn) {
+    D3ViewStatefulComponent.prototype._selectSvgEl = function (idIn) {
         return d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#" + idIn)
             .append('svg')
             .attr('width', '100%')
             .attr('height', '100%');
     };
-    D3ViewStatefulComponent.prototype.renderTo = function (selection) {
+    D3ViewStatefulComponent.prototype._renderTo = function (selection) {
         this.curGridState = this.curGridState.concat(this.curGridState);
         selection
             .selectAll('path')
@@ -266,7 +231,7 @@ var D3ViewStatefulComponent = /** @class */ (function () {
             .attr("stroke-width", 2)
             .attr("fill", "none");
     };
-    D3ViewStatefulComponent.prototype.update = function (selection) {
+    D3ViewStatefulComponent.prototype._update = function (selection) {
         selection
             .selectAll('path')
             .each(function (el) {
@@ -275,19 +240,17 @@ var D3ViewStatefulComponent = /** @class */ (function () {
             });
         })
             .attr('d', function (d) { console.log(d); return d._line(d.pts); });
-        // .attr("stroke", d => { return 'black' })
-        // .attr("stroke-width", 2)
-        // .attr("fill", "none")
     };
     D3ViewStatefulComponent.prototype._gridElInitializer = function (gridBaseX, gridBaseY) {
         return {
             gridBaseX: gridBaseX,
             gridBaseY: gridBaseY,
-            pts: this._generatePts(gridBaseX, gridBaseY),
+            pts: this._generateGridPts(gridBaseX, gridBaseY),
             _line: this._generateLine
         };
     };
-    D3ViewStatefulComponent.prototype._generatePts = function (gridBaseX, gridBaseY) {
+    // 
+    D3ViewStatefulComponent.prototype._generateGridPts = function (gridBaseX, gridBaseY) {
         var ret = [];
         for (var i = 0; i <= 20; i++) {
             if (gridBaseX === 0) {
@@ -327,206 +290,6 @@ var D3ViewStatefulComponent = /** @class */ (function () {
         tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
     ], D3ViewStatefulComponent);
     return D3ViewStatefulComponent;
-}());
-
-
-
-/***/ }),
-
-/***/ "./src/app/subcomponents/d3-view/d3-view.component.css":
-/*!*************************************************************!*\
-  !*** ./src/app/subcomponents/d3-view/d3-view.component.css ***!
-  \*************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = ".d3-view {\r\n    width: 100%;\r\n    height: 1000px;\r\n}\r\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvc3ViY29tcG9uZW50cy9kMy12aWV3L2QzLXZpZXcuY29tcG9uZW50LmNzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtJQUNJLFdBQVc7SUFDWCxjQUFjO0FBQ2xCIiwiZmlsZSI6InNyYy9hcHAvc3ViY29tcG9uZW50cy9kMy12aWV3L2QzLXZpZXcuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5kMy12aWV3IHtcclxuICAgIHdpZHRoOiAxMDAlO1xyXG4gICAgaGVpZ2h0OiAxMDAwcHg7XHJcbn0iXX0= */"
-
-/***/ }),
-
-/***/ "./src/app/subcomponents/d3-view/d3-view.component.html":
-/*!**************************************************************!*\
-  !*** ./src/app/subcomponents/d3-view/d3-view.component.html ***!
-  \**************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = "<div id=\"d3-view\" class=\"d3-view\">\r\n\r\n</div>"
-
-/***/ }),
-
-/***/ "./src/app/subcomponents/d3-view/d3-view.component.ts":
-/*!************************************************************!*\
-  !*** ./src/app/subcomponents/d3-view/d3-view.component.ts ***!
-  \************************************************************/
-/*! exports provided: D3ViewComponent */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "D3ViewComponent", function() { return D3ViewComponent; });
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-/* harmony import */ var _classes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../classes */ "./src/app/classes.ts");
-
-
-
-
-var D3ViewComponent = /** @class */ (function () {
-    function D3ViewComponent() {
-        this.gridParams = new _classes__WEBPACK_IMPORTED_MODULE_3__["pv"].gridParams();
-        this.curGrid = [];
-        this._lineFunc = d3__WEBPACK_IMPORTED_MODULE_2__["line"]()
-            .x(function (d) { return d.x; })
-            .y(function (d) { return d.y; });
-    }
-    D3ViewComponent.prototype.ngOnInit = function () {
-        this.curGrid = this._getStartPoints(this.gridParams.gridLimit);
-        var chartId = 'd3-view';
-        var selection = this.selectSvgEl(chartId);
-        this.renderTo(selection);
-    };
-    D3ViewComponent.prototype.selectSvgEl = function (idIn) {
-        return d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#" + idIn)
-            .append('svg')
-            .attr('width', '100%')
-            .attr('height', '100%');
-    };
-    D3ViewComponent.prototype.renderTo = function (selection) {
-        var _this = this;
-        var self = this;
-        selection
-            .selectAll('path')
-            .data(this.curGrid).enter().append('path')
-            .attr('d', function (d) { return _this.getLineFromGrid(d, false); })
-            .attr("stroke", function (d) { return d.color; })
-            .attr("stroke-width", 2)
-            .attr("fill", "none")
-            .on("mouseover", function (d) { self.mouseOver.call(this, self, d); });
-    };
-    D3ViewComponent.prototype.getLineFromGrid = function (d, isCurve) {
-        //isCurve = typeof isCurve === 'undefined' ? false: isCurve;
-        if (d.gridX === 0) {
-            if (d.gridY === 0) {
-                return this._lineFunc(this._drawHorizGridLine(d.gridY)
-                    .concat(this._drawVertGridLine(d.gridX)));
-            }
-            else {
-                if (isCurve) {
-                    console.log(isCurve);
-                    //todo:this is untested!!
-                    return this._lineFunc(this._drawHorizCurveLine(d.gridY, 1));
-                }
-                else {
-                    return this._lineFunc(this._drawHorizGridLine(d.gridY));
-                }
-            }
-        }
-        else {
-            return this._lineFunc(this._drawVertGridLine(d.gridX));
-        }
-    };
-    D3ViewComponent.prototype.mouseOver = function (self, d) {
-        //console.log(d3.select(this).transition());
-        var _this = this;
-        d3__WEBPACK_IMPORTED_MODULE_2__["select"](this).each(function (hoverEl) {
-            var newGrid = d;
-            if (d.gridX === 0) {
-                newGrid.gridY = d.gridY + 0.1;
-            }
-            else {
-                newGrid.gridX = d.gridX + 0.1;
-            }
-            // d3.select(this).remove();
-            d3__WEBPACK_IMPORTED_MODULE_2__["select"](_this).attr('d', self.getLineFromGrid(newGrid, true));
-            d3__WEBPACK_IMPORTED_MODULE_2__["select"](_this).attr('stroke', function (d) { return d.color; });
-            console.log(newGrid);
-        });
-    };
-    D3ViewComponent.prototype.gridElEq = function (gridEl1, gridEl2) {
-        return gridEl1.gridX === gridEl2.gridX && gridEl1.gridY === gridEl2.gridY;
-    };
-    // private _getCurGridItem(coord: pv.coord):pv.gridItem {
-    //   const x = coord.x;
-    //   const y = coord.y;
-    //   const gridX = Math.floor(x/this.gridParams.gridScale);
-    //   const gridY = Math.floor(y/this.gridParams.gridScale);
-    //   return {
-    //     x,y,gridX,gridY
-    //   }
-    // }
-    D3ViewComponent.prototype._getStartPoints = function (gridLimit) {
-        var ret = [];
-        for (var i = 0; i <= gridLimit; i++) {
-            ret.push({
-                x: i * this.gridParams.gridScale,
-                y: 0,
-                gridX: i,
-                gridY: 0,
-                color: 'black'
-            });
-            ret.push({
-                x: 0,
-                y: i * this.gridParams.gridScale,
-                gridX: 0,
-                gridY: i,
-                color: 'black'
-            });
-        }
-        return ret;
-    };
-    D3ViewComponent.prototype._drawHorizCurveLine = function (yCoord, xCenter) {
-        var ret = [];
-        var maxDev = .2;
-        var gridLimit = this.gridParams.gridLimit;
-        for (var i = 0; i < gridLimit; i++) {
-            var curDev = i + Math.abs(maxDev * (i - xCenter) / gridLimit);
-            ret.push({
-                x: (i + this.gridParams.leftBuffer) * this.gridParams.gridScale,
-                y: (yCoord + this.gridParams.topBuffer + curDev) * this.gridParams.gridScale,
-                gridX: i + this.gridParams.leftBuffer,
-                gridY: yCoord + this.gridParams.topBuffer
-            });
-        }
-        return ret;
-    };
-    D3ViewComponent.prototype._drawHorizGridLine = function (yCoord) {
-        var ret = [];
-        for (var i = 0; i <= this.gridParams.gridLimit; i++) {
-            ret.push({
-                x: (i + this.gridParams.leftBuffer) * this.gridParams.gridScale,
-                y: (yCoord + this.gridParams.topBuffer) * this.gridParams.gridScale,
-                gridX: i + this.gridParams.leftBuffer,
-                gridY: yCoord + this.gridParams.topBuffer
-            });
-        }
-        return ret;
-    };
-    D3ViewComponent.prototype._drawVertGridLine = function (xCoord) {
-        var ret = [];
-        for (var i = 0; i <= this.gridParams.gridLimit; i++) {
-            ret.push({
-                x: (xCoord + this.gridParams.leftBuffer) * this.gridParams.gridScale,
-                y: (i + this.gridParams.topBuffer) * this.gridParams.gridScale,
-                gridX: xCoord + this.gridParams.leftBuffer,
-                gridY: i + this.gridParams.topBuffer
-            });
-        }
-        return ret;
-    };
-    D3ViewComponent.prototype._drawBoth = function () {
-        return this._drawVertGridLine(0).concat(this._drawHorizGridLine(0));
-    };
-    D3ViewComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
-        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
-            selector: 'app-d3-view',
-            template: __webpack_require__(/*! ./d3-view.component.html */ "./src/app/subcomponents/d3-view/d3-view.component.html"),
-            styles: [__webpack_require__(/*! ./d3-view.component.css */ "./src/app/subcomponents/d3-view/d3-view.component.css")]
-        }),
-        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
-    ], D3ViewComponent);
-    return D3ViewComponent;
 }());
 
 
@@ -600,4 +363,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.0a3fc8cd1ef879bfbddb.js.map
+//# sourceMappingURL=main.8bbe533d39890aa4e50d.js.map
