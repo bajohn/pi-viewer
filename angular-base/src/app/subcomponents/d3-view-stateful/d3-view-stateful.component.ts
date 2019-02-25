@@ -12,12 +12,15 @@ export class D3ViewStatefulComponent implements OnInit {
   constructor() { }
   _self = this;
   curGridState: Array<pv.gridItem> = []
+  gridParams = new pv.gridParams();
 
   ngOnInit() {
     this.curGridState = this._generateCoord();
     const chartId = 'd3-view';
     const selection = this._selectSvgEl(chartId);
-    this._renderTo(selection);
+
+    this._initialRender(selection);
+
     // setInterval(() => {
     //   this._update(selection);
     // }, 10);
@@ -29,17 +32,19 @@ export class D3ViewStatefulComponent implements OnInit {
       .attr('height', '100%')
   }
 
-  // Default rendering
-  private _renderTo(selection) {
 
-    this.curGridState = this.curGridState.concat(this.curGridState);
+
+  // Default rendering
+  private _initialRender(selection) {
+
+    //this.curGridState = this.curGridState.concat(this.curGridState);
     selection
       .selectAll('path')
       .data(this.curGridState).enter().append('path')
 
-      .attr('d', (d) => { console.log(d); return d._line(d.pts); })
+      .attr('d', (d) => { return d._line(d.pts); })
       .attr("stroke", d => { return 'rgba(112, 112, 112, 1)' })
-      .attr("stroke-width", 1)
+      .attr("stroke-width", .5)
       .attr("fill", "none");
 
   }
@@ -52,13 +57,13 @@ export class D3ViewStatefulComponent implements OnInit {
           el.x = 100 + 10 * Math.sin((new Date).getTime() / 1000);
         })
       })
-      .attr('d', (d) => { console.log(d); return d._line(d.pts); });
+      .attr('d', (d) => { return d._line(d.pts); });
   }
 
   // generate all grid base coordinates
   private _generateCoord() {
     const retGridState: Array<pv.gridItem> = []
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 0; i <= this.gridParams.gridLimit; i++) {
       retGridState.push(this._gridElInitializer(0, i));
       retGridState.push(this._gridElInitializer(i, 0));
     }
@@ -76,7 +81,8 @@ export class D3ViewStatefulComponent implements OnInit {
     }
 
   }
-  // returns d3 line generating function
+  // Returns d3 line generating function.
+  // This will probably remain constant once initialized.
   private _generateLine = d3.line()
     .x(function (d) { return d.x })
     .y(function (d) { return d.y })
@@ -85,17 +91,37 @@ export class D3ViewStatefulComponent implements OnInit {
   // to render the default grid.
   private _generateGridPts(gridBaseX: number, gridBaseY: number): Array<pv.coord> {
     const ret: Array<pv.coord> = [];
-
-    for (let i = 0; i <= 20; i++) {
+    const gridScale = this.gridParams.gridScale;
+    const topBuffer = this.gridParams.topBuffer;
+    const leftBuffer = this.gridParams.leftBuffer;
+    const gridLimit = this.gridParams.gridLimit;
+    for (let i = 0; i <= gridLimit; i++) {
       if (gridBaseX === 0) {
         if (gridBaseY === 0) {
-          // topleft / top right borders. deal later
+          // these specialized borders have a different point density than
+          // the others. may not matter
+          if (i < gridLimit / 2) {
+            // left border
+            ret.push({
+              x: leftBuffer,
+              y: gridScale * (gridLimit - i) + topBuffer,
+            });
+          }
+          else {
+            //top border
+            ret.push({
+              x: gridScale * (2*i - gridLimit) + leftBuffer,
+              y: topBuffer
+            });
+          }
+
+          console.log(ret);
         }
         else {
           // horizontal
           ret.push({
-            x: 10 * (gridBaseX + i),
-            y: 10 * gridBaseY,
+            x: gridScale * (gridBaseX + i) + leftBuffer,
+            y: gridScale * gridBaseY + topBuffer,
           });
         }
 
@@ -103,8 +129,8 @@ export class D3ViewStatefulComponent implements OnInit {
       else {
         // vertical line
         ret.push({
-          x: 10 * gridBaseX,
-          y: 10 * (gridBaseY + i),
+          x: gridScale * gridBaseX + leftBuffer,
+          y: gridScale * (gridBaseY + i) + topBuffer,
         });
       }
     }

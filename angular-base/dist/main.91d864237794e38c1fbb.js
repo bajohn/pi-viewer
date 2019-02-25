@@ -156,6 +156,35 @@ var AppModule = /** @class */ (function () {
 
 /***/ }),
 
+/***/ "./src/app/classes.ts":
+/*!****************************!*\
+  !*** ./src/app/classes.ts ***!
+  \****************************/
+/*! exports provided: pv */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pv", function() { return pv; });
+var pv;
+(function (pv) {
+    var gridParams = /** @class */ (function () {
+        function gridParams() {
+            // number of grid squares across
+            this.gridLimit = 10;
+            // pixels per grid square
+            this.gridScale = 5;
+            this.topBuffer = 1;
+            this.leftBuffer = 10;
+        }
+        return gridParams;
+    }());
+    pv.gridParams = gridParams;
+})(pv || (pv = {}));
+
+
+/***/ }),
+
 /***/ "./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.css":
 /*!*******************************************************************************!*\
   !*** ./src/app/subcomponents/d3-view-stateful/d3-view-stateful.component.css ***!
@@ -190,7 +219,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "D3ViewStatefulComponent", function() { return D3ViewStatefulComponent; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var _classes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../classes */ "./src/app/classes.ts");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+
 
 
 
@@ -198,8 +229,10 @@ var D3ViewStatefulComponent = /** @class */ (function () {
     function D3ViewStatefulComponent() {
         this._self = this;
         this.curGridState = [];
-        // returns d3 line generating function
-        this._generateLine = d3__WEBPACK_IMPORTED_MODULE_2__["line"]()
+        this.gridParams = new _classes__WEBPACK_IMPORTED_MODULE_2__["pv"].gridParams();
+        // Returns d3 line generating function.
+        // This will probably remain constant once initialized.
+        this._generateLine = d3__WEBPACK_IMPORTED_MODULE_3__["line"]()
             .x(function (d) { return d.x; })
             .y(function (d) { return d.y; });
     }
@@ -207,26 +240,26 @@ var D3ViewStatefulComponent = /** @class */ (function () {
         this.curGridState = this._generateCoord();
         var chartId = 'd3-view';
         var selection = this._selectSvgEl(chartId);
-        this._renderTo(selection);
+        this._initialRender(selection);
         // setInterval(() => {
         //   this._update(selection);
         // }, 10);
     };
     D3ViewStatefulComponent.prototype._selectSvgEl = function (idIn) {
-        return d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#" + idIn)
+        return d3__WEBPACK_IMPORTED_MODULE_3__["select"]("#" + idIn)
             .append('svg')
             .attr('width', '100%')
             .attr('height', '100%');
     };
     // Default rendering
-    D3ViewStatefulComponent.prototype._renderTo = function (selection) {
-        this.curGridState = this.curGridState.concat(this.curGridState);
+    D3ViewStatefulComponent.prototype._initialRender = function (selection) {
+        //this.curGridState = this.curGridState.concat(this.curGridState);
         selection
             .selectAll('path')
             .data(this.curGridState).enter().append('path')
-            .attr('d', function (d) { console.log(d); return d._line(d.pts); })
+            .attr('d', function (d) { return d._line(d.pts); })
             .attr("stroke", function (d) { return 'rgba(112, 112, 112, 1)'; })
-            .attr("stroke-width", 1)
+            .attr("stroke-width", .5)
             .attr("fill", "none");
     };
     D3ViewStatefulComponent.prototype._update = function (selection) {
@@ -237,12 +270,12 @@ var D3ViewStatefulComponent = /** @class */ (function () {
                 el.x = 100 + 10 * Math.sin((new Date).getTime() / 1000);
             });
         })
-            .attr('d', function (d) { console.log(d); return d._line(d.pts); });
+            .attr('d', function (d) { return d._line(d.pts); });
     };
     // generate all grid base coordinates
     D3ViewStatefulComponent.prototype._generateCoord = function () {
         var retGridState = [];
-        for (var i = 1; i <= 20; i++) {
+        for (var i = 0; i <= this.gridParams.gridLimit; i++) {
             retGridState.push(this._gridElInitializer(0, i));
             retGridState.push(this._gridElInitializer(i, 0));
         }
@@ -262,24 +295,44 @@ var D3ViewStatefulComponent = /** @class */ (function () {
     // to render the default grid.
     D3ViewStatefulComponent.prototype._generateGridPts = function (gridBaseX, gridBaseY) {
         var ret = [];
-        for (var i = 0; i <= 20; i++) {
+        var gridScale = this.gridParams.gridScale;
+        var topBuffer = this.gridParams.topBuffer;
+        var leftBuffer = this.gridParams.leftBuffer;
+        var gridLimit = this.gridParams.gridLimit;
+        for (var i = 0; i <= gridLimit; i++) {
             if (gridBaseX === 0) {
                 if (gridBaseY === 0) {
-                    // topleft / top right borders. deal later
+                    // these specialized borders have a different point density than
+                    // the others. may not matter
+                    if (i < gridLimit / 2) {
+                        // left border
+                        ret.push({
+                            x: leftBuffer,
+                            y: gridScale * (gridLimit - i) + topBuffer,
+                        });
+                    }
+                    else {
+                        //top border
+                        ret.push({
+                            x: gridScale * (2 * i - gridLimit) + leftBuffer,
+                            y: topBuffer
+                        });
+                    }
+                    console.log(ret);
                 }
                 else {
                     // horizontal
                     ret.push({
-                        x: 10 * (gridBaseX + i),
-                        y: 10 * gridBaseY,
+                        x: gridScale * (gridBaseX + i) + leftBuffer,
+                        y: gridScale * gridBaseY + topBuffer,
                     });
                 }
             }
             else {
                 // vertical line
                 ret.push({
-                    x: 10 * gridBaseX,
-                    y: 10 * (gridBaseY + i),
+                    x: gridScale * gridBaseX + leftBuffer,
+                    y: gridScale * (gridBaseY + i) + topBuffer,
                 });
             }
         }
@@ -367,4 +420,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.4dac0485e62909339dcc.js.map
+//# sourceMappingURL=main.91d864237794e38c1fbb.js.map
