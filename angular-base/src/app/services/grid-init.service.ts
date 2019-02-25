@@ -7,7 +7,7 @@ import * as d3 from "d3"
 export class GridInitService {
 
   constructor() { }
-  gridParams = new pv.gridParams;
+  public gridParams = new pv.gridParams;
   // generate all grid base coordinates
   public generateCoord() {
     const retGridState: Array<pv.gridItem> = []

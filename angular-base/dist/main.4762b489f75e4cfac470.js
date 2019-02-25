@@ -333,15 +333,15 @@ __webpack_require__.r(__webpack_exports__);
 var D3ViewStatefulComponent = /** @class */ (function () {
     function D3ViewStatefulComponent(gridInitServ) {
         this.gridInitServ = gridInitServ;
-        this._self = this;
         this.curGridState = [];
+        this.curPtList = [];
+        this.svgSelection = '';
     }
     D3ViewStatefulComponent.prototype.ngOnInit = function () {
         this.curGridState = this.gridInitServ.generateCoord();
         var chartId = 'd3-view';
-        var selection = this._selectSvgEl(chartId);
-        this._initialRender(selection);
-        this._createMouseEvents(selection);
+        this.svgSelection = this._selectSvgEl(chartId);
+        this._initialRender(this.svgSelection);
         // setInterval(() => {
         //   this._update(selection);
         // }, 10);
@@ -354,14 +354,41 @@ var D3ViewStatefulComponent = /** @class */ (function () {
     };
     // Default rendering
     D3ViewStatefulComponent.prototype._initialRender = function (selection) {
+        var _this = this;
         //this.curGridState = this.curGridState.concat(this.curGridState);
         selection
             .selectAll('path')
-            .data(this.curGridState).enter().append('path')
+            .data(this.curGridState, function (d) {
+            // Key function, must return a unique value for every path.
+            return [d.gridX, d.gridY];
+        })
+            .enter().append('path')
             .attr('d', function (d) { return d._line(d.pts); })
             .attr("stroke", function (d) { return 'rgba(112, 112, 112, 1)'; })
             .attr("stroke-width", .5)
             .attr("fill", "none");
+        var allPts = this._concatAllPts();
+        this.curPtList = allPts;
+        selection.selectAll('rect')
+            .data(allPts, function (d) {
+            // Key function, must return a unique value for every path.
+            return [d.x, d.y];
+        })
+            .enter()
+            .append('rect')
+            .attr('x', function (d) { return d.x; })
+            .attr('y', function (d) { return d.y; })
+            .attr('height', this.gridInitServ.gridParams.gridScale - 1)
+            .attr('width', this.gridInitServ.gridParams.gridScale - 1)
+            .attr('fill', function (d) { return d.rectColor; })
+            .on('mousemove', function (d) { _this.handleMouseMove(d); });
+    };
+    D3ViewStatefulComponent.prototype._concatAllPts = function () {
+        return this.curGridState.reduce(function (accum, el) {
+            // const copyEl = Object.assign({}, el);
+            el.pts.map(function (locEl) { return locEl.rectColor = 'rgba(0,0,0,0)'; });
+            return accum.concat(el.pts);
+        }, []);
     };
     D3ViewStatefulComponent.prototype._update = function (selection) {
         selection
@@ -373,7 +400,30 @@ var D3ViewStatefulComponent = /** @class */ (function () {
         })
             .attr('d', function (d) { return d._line(d.pts); });
     };
-    D3ViewStatefulComponent.prototype._createMouseEvents = function (selection) {
+    // _createMouseEvents(selection) {
+    //   selection.on('mousemove', function () {
+    //     console.log('mouse', this)
+    //   });
+    D3ViewStatefulComponent.prototype.handleMouseMove = function (curCoord) {
+        var _this = this;
+        console.log(curCoord);
+        curCoord.rectColor = 'red';
+        //d3.select(this).datum(curCoord);
+        var curPts = this.curPtList.push(curCoord);
+        this.svgSelection
+            .selectAll('rect')
+            .data(this.curPtList, function (d) {
+            // Key function, must return a unique value for every path.
+            return [d.x, d.y];
+        })
+            .enter()
+            .append('rect')
+            .attr('x', function (d) { return d.x; })
+            .attr('y', function (d) { return d.y; })
+            .attr('height', this.gridInitServ.gridParams.gridScale - 1)
+            .attr('width', this.gridInitServ.gridParams.gridScale - 1)
+            .attr('fill', function (d) { return d.rectColor; })
+            .on('mousemove', function (d) { _this.handleMouseMove(d); });
     };
     D3ViewStatefulComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
@@ -457,4 +507,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.9dda3da8ce458cccc698.js.map
+//# sourceMappingURL=main.4762b489f75e4cfac470.js.map

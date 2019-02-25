@@ -8,7 +8,8 @@ export namespace pv {
     }
     export interface coord {
         x: number,
-        y: number
+        y: number,
+        rectColor?: string
     }
 
     export class gridParams {
