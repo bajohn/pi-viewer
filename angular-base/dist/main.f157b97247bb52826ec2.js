@@ -173,7 +173,7 @@ var pv;
             // number of grid squares across
             this.gridLimit = 10;
             // pixels per grid square
-            this.gridScale = 5;
+            this.gridScale = 50;
             this.topBuffer = 1;
             this.leftBuffer = 10;
         }
@@ -334,7 +334,7 @@ var D3ViewStatefulComponent = /** @class */ (function () {
     function D3ViewStatefulComponent(gridInitServ) {
         this.gridInitServ = gridInitServ;
         this.curGridState = [];
-        this.curPtList = [];
+        this.curPtList = []; // do we need this?
         this.svgSelection = '';
     }
     D3ViewStatefulComponent.prototype.ngOnInit = function () {
@@ -378,10 +378,10 @@ var D3ViewStatefulComponent = /** @class */ (function () {
             .append('rect')
             .attr('x', function (d) { return d.x; })
             .attr('y', function (d) { return d.y; })
-            .attr('height', this.gridInitServ.gridParams.gridScale - 1)
-            .attr('width', this.gridInitServ.gridParams.gridScale - 1)
+            .attr('height', this.gridInitServ.gridParams.gridScale)
+            .attr('width', this.gridInitServ.gridParams.gridScale)
             .attr('fill', function (d) { return d.rectColor; })
-            .on('mousemove', function (d) { _this.handleMouseMove(d); });
+            .on('mouseover', function (d) { _this.handleMouseMove(d); });
     };
     D3ViewStatefulComponent.prototype._concatAllPts = function () {
         return this.curGridState.reduce(function (accum, el) {
@@ -405,25 +405,48 @@ var D3ViewStatefulComponent = /** @class */ (function () {
     //     console.log('mouse', this)
     //   });
     D3ViewStatefulComponent.prototype.handleMouseMove = function (curCoord) {
-        var _this = this;
         console.log(curCoord);
         curCoord.rectColor = 'red';
         //d3.select(this).datum(curCoord);
-        var curPts = this.curPtList.push(curCoord);
+        this.bendGrid(curCoord);
+        // sample: append red rectangle to current grid location.
+        // this.svgSelection
+        //   .selectAll('rect')
+        //   .data(this.curPtList, (d) => {
+        //     // Key function, must return a unique value for every path.
+        //     return [d.x, d.y]
+        //   })
+        //   .enter()
+        //   .append('rect')
+        //   .attr('x', d => { return d.x })
+        //   .attr('y', d => { return d.y })
+        //   .attr('height', this.gridInitServ.gridParams.gridScale )
+        //   .attr('width', this.gridInitServ.gridParams.gridScale )
+        //   .attr('fill', d => { return d.rectColor })
+        //   .on('mouseover', d => { this.handleMouseMove(d) });
+    };
+    D3ViewStatefulComponent.prototype.bendGrid = function (curCoord) {
+        console.log(curCoord, this.curGridState);
+        //sample: horizontal line
+        this.curGridState[2].pts.map(function (el) {
+            el.y = el.y + el.x / 10;
+            return el;
+        });
         this.svgSelection
-            .selectAll('rect')
-            .data(this.curPtList, function (d) {
+            .selectAll('path')
+            .data(this.curGridState, function (d) {
             // Key function, must return a unique value for every path.
-            return [d.x, d.y];
+            return [d.gridX, d.gridY];
         })
-            .enter()
-            .append('rect')
-            .attr('x', function (d) { return d.x; })
-            .attr('y', function (d) { return d.y; })
-            .attr('height', this.gridInitServ.gridParams.gridScale - 1)
-            .attr('width', this.gridInitServ.gridParams.gridScale - 1)
-            .attr('fill', function (d) { return d.rectColor; })
-            .on('mousemove', function (d) { _this.handleMouseMove(d); });
+            .enter().append('path')
+            .attr('d', function (d) { return d._line(d.pts); })
+            .attr("stroke", function (d) { return 'rgba(112, 112, 112, 1)'; })
+            .attr("stroke-width", .5)
+            .attr("fill", "none");
+        var pathSelect = this.svgSelection
+            .selectAll('path');
+        // key isnt working- data is ballooning
+        console.log(pathSelect, pathSelect.data());
     };
     D3ViewStatefulComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
@@ -507,4 +530,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.4762b489f75e4cfac470.js.map
+//# sourceMappingURL=main.f157b97247bb52826ec2.js.map

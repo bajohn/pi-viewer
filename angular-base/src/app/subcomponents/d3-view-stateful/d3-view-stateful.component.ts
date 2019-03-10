@@ -14,7 +14,7 @@ export class D3ViewStatefulComponent implements OnInit {
     private gridInitServ: GridInitService
   ) { }
   private curGridState: Array<pv.gridItem> = []
-  private curPtList: Array<pv.coord> = [];
+  private curPtList: Array<pv.coord> = []; // do we need this?
   private svgSelection: any = '';
 
   ngOnInit() {
@@ -65,10 +65,10 @@ export class D3ViewStatefulComponent implements OnInit {
       .append('rect')
       .attr('x', d => { return d.x })
       .attr('y', d => { return d.y })
-      .attr('height', this.gridInitServ.gridParams.gridScale - 1)
-      .attr('width', this.gridInitServ.gridParams.gridScale - 1)
+      .attr('height', this.gridInitServ.gridParams.gridScale)
+      .attr('width', this.gridInitServ.gridParams.gridScale)
       .attr('fill', d => { return d.rectColor })
-      .on('mousemove', d => { this.handleMouseMove(d) });
+      .on('mouseover', d => { this.handleMouseMove(d) });
 
   }
 
@@ -100,22 +100,59 @@ export class D3ViewStatefulComponent implements OnInit {
     console.log(curCoord);
     curCoord.rectColor = 'red';
     //d3.select(this).datum(curCoord);
-    const curPts = this.curPtList.push(curCoord);
+    this.bendGrid(curCoord);
+
+    // sample: append red rectangle to current grid location.
+    // this.svgSelection
+    //   .selectAll('rect')
+    //   .data(this.curPtList, (d) => {
+    //     // Key function, must return a unique value for every path.
+    //     return [d.x, d.y]
+    //   })
+    //   .enter()
+    //   .append('rect')
+    //   .attr('x', d => { return d.x })
+    //   .attr('y', d => { return d.y })
+    //   .attr('height', this.gridInitServ.gridParams.gridScale )
+    //   .attr('width', this.gridInitServ.gridParams.gridScale )
+    //   .attr('fill', d => { return d.rectColor })
+    //   .on('mouseover', d => { this.handleMouseMove(d) });
+
+
+
+
+
+
+  }
+  bendGrid(curCoord: pv.coord) {
+    console.log(curCoord, this.curGridState);
+    //sample: horizontal line
+    this.curGridState[2].pts.map(el => {
+      el.y = el.y + el.x / 10;
+      return el;
+    });
 
     this.svgSelection
-      .selectAll('rect')
-      .data(this.curPtList, (d) => {
+      .selectAll('path')
+      .data(this.curGridState, (d) => {
         // Key function, must return a unique value for every path.
-        return [d.x, d.y]
+        return [d.gridX, d.gridY]
       })
-      .enter()
-      .append('rect')
-      .attr('x', d => { return d.x })
-      .attr('y', d => { return d.y })
-      .attr('height', this.gridInitServ.gridParams.gridScale - 1)
-      .attr('width', this.gridInitServ.gridParams.gridScale - 1)
-      .attr('fill', d => { return d.rectColor })
-      .on('mousemove', d => { this.handleMouseMove(d) });
+
+      .enter().append('path')
+
+      .attr('d', (d) => { return d._line(d.pts); })
+      .attr("stroke", d => { return 'rgba(112, 112, 112, 1)' })
+      .attr("stroke-width", .5)
+      .attr("fill", "none")
+
+    const pathSelect = this.svgSelection
+      .selectAll('path')
+      
+      // key isnt working- data is ballooning
+    console.log(pathSelect, pathSelect.data())
+
+
   }
 
 }
