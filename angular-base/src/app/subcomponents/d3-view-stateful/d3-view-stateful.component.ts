@@ -45,7 +45,7 @@ export class D3ViewStatefulComponent implements OnInit {
       .selectAll('path')
       .data(this.curGridState, (d) => {
         // Key function, must return a unique value for every path.
-        return [d.gridX, d.gridY]
+        return '' + d.gridX + d.gridY;
       })
       .enter().append('path')
 
@@ -136,7 +136,7 @@ export class D3ViewStatefulComponent implements OnInit {
       .selectAll('path')
       .data(this.curGridState, (d) => {
         // Key function, must return a unique value for every path.
-        return [d.gridX, d.gridY]
+        return '' + d.gridX + d.gridY;
       })
 
       .enter().append('path')
@@ -148,8 +148,8 @@ export class D3ViewStatefulComponent implements OnInit {
 
     const pathSelect = this.svgSelection
       .selectAll('path')
-      
-      // key isnt working- data is ballooning
+
+    // key isnt working- data is ballooning
     console.log(pathSelect, pathSelect.data())
 
 

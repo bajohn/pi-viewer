@@ -360,7 +360,7 @@ var D3ViewStatefulComponent = /** @class */ (function () {
             .selectAll('path')
             .data(this.curGridState, function (d) {
             // Key function, must return a unique value for every path.
-            return [d.gridX, d.gridY];
+            return '' + d.gridX + d.gridY;
         })
             .enter().append('path')
             .attr('d', function (d) { return d._line(d.pts); })
@@ -436,7 +436,7 @@ var D3ViewStatefulComponent = /** @class */ (function () {
             .selectAll('path')
             .data(this.curGridState, function (d) {
             // Key function, must return a unique value for every path.
-            return [d.gridX, d.gridY];
+            return '' + d.gridX + d.gridY;
         })
             .enter().append('path')
             .attr('d', function (d) { return d._line(d.pts); })
@@ -530,4 +530,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\a
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.f157b97247bb52826ec2.js.map
+//# sourceMappingURL=main.ca0937a6d76401d2750d.js.map
