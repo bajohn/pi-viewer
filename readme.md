@@ -9,3 +9,8 @@ This project creates the PI Viewer Web Application, which allows users to easily
 - Golang (Back End)
 - Mongo (DB)
 
+## Usage 
+- Run ```docker-compose up```
+- Angular build with ```ng build --configuration=dev``` in angular-base subdirectory
+- Monitor with ```docker stats```
+- Kill with ```docker kill $(docker ps -q)```
