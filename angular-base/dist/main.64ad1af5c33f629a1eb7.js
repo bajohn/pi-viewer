@@ -359,8 +359,7 @@ var D3ViewStatefulComponent = /** @class */ (function () {
         selection
             .selectAll('path')
             .data(this.curGridState, function (d) {
-            // Key function, must return a unique value for every path.
-            return '' + d.gridX + d.gridY;
+            return _this._getKey(d);
         })
             .enter().append('path')
             .attr('d', function (d) { return d._line(d.pts); })
@@ -372,7 +371,7 @@ var D3ViewStatefulComponent = /** @class */ (function () {
         selection.selectAll('rect')
             .data(allPts, function (d) {
             // Key function, must return a unique value for every path.
-            return [d.x, d.y];
+            return _this._getKey(d);
         })
             .enter()
             .append('rect')
@@ -382,6 +381,10 @@ var D3ViewStatefulComponent = /** @class */ (function () {
             .attr('width', this.gridInitServ.gridParams.gridScale)
             .attr('fill', function (d) { return d.rectColor; })
             .on('mouseover', function (d) { _this.handleMouseMove(d); });
+    };
+    D3ViewStatefulComponent.prototype._getKey = function (d) {
+        // string way         return '' + d.gridX + d.gridY;
+        return Number.parseFloat(d.x + '.' + d.y);
     };
     D3ViewStatefulComponent.prototype._concatAllPts = function () {
         return this.curGridState.reduce(function (accum, el) {
@@ -405,27 +408,34 @@ var D3ViewStatefulComponent = /** @class */ (function () {
     //     console.log('mouse', this)
     //   });
     D3ViewStatefulComponent.prototype.handleMouseMove = function (curCoord) {
+        var _this = this;
         console.log(curCoord);
         curCoord.rectColor = 'red';
         //d3.select(this).datum(curCoord);
-        this.bendGrid(curCoord);
+        //this.bendGrid(curCoord);
         // sample: append red rectangle to current grid location.
-        // this.svgSelection
-        //   .selectAll('rect')
-        //   .data(this.curPtList, (d) => {
-        //     // Key function, must return a unique value for every path.
-        //     return [d.x, d.y]
-        //   })
-        //   .enter()
-        //   .append('rect')
-        //   .attr('x', d => { return d.x })
-        //   .attr('y', d => { return d.y })
-        //   .attr('height', this.gridInitServ.gridParams.gridScale )
-        //   .attr('width', this.gridInitServ.gridParams.gridScale )
-        //   .attr('fill', d => { return d.rectColor })
-        //   .on('mouseover', d => { this.handleMouseMove(d) });
+        // this only appends- need to select current element instead
+        this.svgSelection
+            .selectAll('rect')
+            .data(this.curPtList, function (d) {
+            // Key function, must return a unique value for every path.
+            return _this._getKey(d);
+        })
+            .enter()
+            .append('rect')
+            .attr('x', function (d) { return d.x; })
+            .attr('y', function (d) { return d.y; })
+            .attr('height', this.gridInitServ.gridParams.gridScale)
+            .attr('width', this.gridInitServ.gridParams.gridScale)
+            .attr('fill', function (d) { return d.rectColor; })
+            .on('mouseover', function (d) { _this.handleMouseMove(d); });
+        var pathSelect = this.svgSelection
+            .selectAll('rect');
+        // key isnt working- data is ballooning
+        console.log(pathSelect, pathSelect.data());
     };
     D3ViewStatefulComponent.prototype.bendGrid = function (curCoord) {
+        var _this = this;
         console.log(curCoord, this.curGridState);
         //sample: horizontal line
         this.curGridState[2].pts.map(function (el) {
@@ -435,12 +445,10 @@ var D3ViewStatefulComponent = /** @class */ (function () {
         this.svgSelection
             .selectAll('path')
             .data(this.curGridState, function (d) {
-            // Key function, must return a unique value for every path.
-            return '' + d.gridX + d.gridY;
+            return _this._getKey(d);
         })
-            .enter().append('path')
             .attr('d', function (d) { return d._line(d.pts); })
-            .attr("stroke", function (d) { return 'rgba(112, 112, 112, 1)'; })
+            .attr("stroke", function (d) { return 'rgba(255, 0, 0, 1)'; })
             .attr("stroke-width", .5)
             .attr("fill", "none");
         var pathSelect = this.svgSelection
@@ -524,10 +532,10 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_1__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\pi-viewer\angular-base\src\main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\repos\pi-viewer\angular-base\src\main.ts */"./src/main.ts");
 
 
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.ca0937a6d76401d2750d.js.map
+//# sourceMappingURL=main.64ad1af5c33f629a1eb7.js.map

@@ -43,9 +43,8 @@ export class D3ViewStatefulComponent implements OnInit {
     //this.curGridState = this.curGridState.concat(this.curGridState);
     selection
       .selectAll('path')
-      .data(this.curGridState, (d) => {
-        // Key function, must return a unique value for every path.
-        return '' + d.gridX + d.gridY;
+      .data(this.curGridState,  (d) => {
+        return this._getKey(d);
       })
       .enter().append('path')
 
@@ -59,7 +58,7 @@ export class D3ViewStatefulComponent implements OnInit {
     selection.selectAll('rect')
       .data(allPts, (d) => {
         // Key function, must return a unique value for every path.
-        return [d.x, d.y]
+        return this._getKey(d);
       })
       .enter()
       .append('rect')
@@ -70,6 +69,11 @@ export class D3ViewStatefulComponent implements OnInit {
       .attr('fill', d => { return d.rectColor })
       .on('mouseover', d => { this.handleMouseMove(d) });
 
+  }
+
+  private _getKey(d: pv.coord) {
+    // string way         return '' + d.gridX + d.gridY;
+    return Number.parseFloat(d.x + '.' + d.y);
   }
 
   private _concatAllPts() {
@@ -100,24 +104,30 @@ export class D3ViewStatefulComponent implements OnInit {
     console.log(curCoord);
     curCoord.rectColor = 'red';
     //d3.select(this).datum(curCoord);
-    this.bendGrid(curCoord);
+    //this.bendGrid(curCoord);
 
     // sample: append red rectangle to current grid location.
-    // this.svgSelection
-    //   .selectAll('rect')
-    //   .data(this.curPtList, (d) => {
-    //     // Key function, must return a unique value for every path.
-    //     return [d.x, d.y]
-    //   })
-    //   .enter()
-    //   .append('rect')
-    //   .attr('x', d => { return d.x })
-    //   .attr('y', d => { return d.y })
-    //   .attr('height', this.gridInitServ.gridParams.gridScale )
-    //   .attr('width', this.gridInitServ.gridParams.gridScale )
-    //   .attr('fill', d => { return d.rectColor })
-    //   .on('mouseover', d => { this.handleMouseMove(d) });
+    // this only appends- need to select current element instead
+    this.svgSelection
+      .selectAll('rect')
+      .data(this.curPtList, (d) => {
+        // Key function, must return a unique value for every path.
+        return this._getKey(d);
+      })
+      .enter()
+      .append('rect')
+      .attr('x', d => { return d.x })
+      .attr('y', d => { return d.y })
+      .attr('height', this.gridInitServ.gridParams.gridScale )
+      .attr('width', this.gridInitServ.gridParams.gridScale )
+      .attr('fill', d => { return d.rectColor })
+      .on('mouseover', d => { this.handleMouseMove(d) });
 
+      const pathSelect = this.svgSelection
+      .selectAll('rect')
+
+    // key isnt working- data is ballooning
+    console.log(pathSelect, pathSelect.data())
 
 
 
@@ -135,14 +145,10 @@ export class D3ViewStatefulComponent implements OnInit {
     this.svgSelection
       .selectAll('path')
       .data(this.curGridState, (d) => {
-        // Key function, must return a unique value for every path.
-        return '' + d.gridX + d.gridY;
+        return this._getKey(d);
       })
-
-      .enter().append('path')
-
       .attr('d', (d) => { return d._line(d.pts); })
-      .attr("stroke", d => { return 'rgba(112, 112, 112, 1)' })
+      .attr("stroke", d => { return 'rgba(255, 0, 0, 1)' })
       .attr("stroke-width", .5)
       .attr("fill", "none")
 
