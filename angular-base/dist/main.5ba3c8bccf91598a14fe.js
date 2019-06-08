@@ -168,10 +168,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "pv", function() { return pv; });
 var pv;
 (function (pv) {
+    // export interface coord {
+    //     x: number,
+    //     y: number,
+    //     rectColor?: string
+    // }
     var gridParams = /** @class */ (function () {
         function gridParams() {
             // number of grid squares across
-            this.gridLimit = 10;
+            this.gridLimit = 4;
             // pixels per grid square
             this.gridScale = 50;
             this.topBuffer = 1;
@@ -198,80 +203,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _classes__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../classes */ "./src/app/classes.ts");
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-
 
 
 
 var GridInitService = /** @class */ (function () {
     function GridInitService() {
         this.gridParams = new _classes__WEBPACK_IMPORTED_MODULE_2__["pv"].gridParams;
-        // Returns d3 line generating function.
-        // This will probably remain constant once initialized.
-        this._generateLine = d3__WEBPACK_IMPORTED_MODULE_3__["line"]()
-            .x(function (d) { return d.x; })
-            .y(function (d) { return d.y; });
+        this.grid = [];
+        this.grid = this.initializeGrid();
     }
-    // generate all grid base coordinates
-    GridInitService.prototype.generateCoord = function () {
-        var retGridState = [];
-        for (var i = 0; i <= this.gridParams.gridLimit; i++) {
-            retGridState.push(this._gridElInitializer(0, i));
-            retGridState.push(this._gridElInitializer(i, 0));
-        }
-        return retGridState;
-    };
-    // for a given base coordinate (like 0,1 or 5,0), return a default gridItem
-    // with needed pts.
-    GridInitService.prototype._gridElInitializer = function (gridBaseX, gridBaseY) {
-        return {
-            gridBaseX: gridBaseX,
-            gridBaseY: gridBaseY,
-            pts: this._generateGridPts(gridBaseX, gridBaseY),
-            _line: this._generateLine
-        };
-    };
-    // for a given base coordinate (like 0,1 or 5,0), return all points needed
-    // to render the default grid.
-    GridInitService.prototype._generateGridPts = function (gridBaseX, gridBaseY) {
+    GridInitService.prototype.initializeGrid = function () {
         var ret = [];
-        var gridScale = this.gridParams.gridScale;
-        var topBuffer = this.gridParams.topBuffer;
-        var leftBuffer = this.gridParams.leftBuffer;
-        var gridLimit = this.gridParams.gridLimit;
-        for (var i = 0; i <= gridLimit; i++) {
-            if (gridBaseX === 0) {
-                if (gridBaseY === 0) {
-                    // these specialized borders have a different point density than
-                    // the others. may not matter
-                    if (i < gridLimit / 2) {
-                        // left border
-                        ret.push({
-                            x: leftBuffer,
-                            y: gridScale * (gridLimit - i) + topBuffer,
-                        });
-                    }
-                    else {
-                        //top border
-                        ret.push({
-                            x: gridScale * (2 * i - gridLimit) + leftBuffer,
-                            y: topBuffer
-                        });
-                    }
-                }
-                else {
-                    // horizontal
-                    ret.push({
-                        x: gridScale * (gridBaseX + i) + leftBuffer,
-                        y: gridScale * gridBaseY + topBuffer,
-                    });
-                }
-            }
-            else {
-                // vertical line
+        for (var x = 0; x < this.gridParams.gridLimit; x++) {
+            for (var y = 0; y < this.gridParams.gridLimit; y++) {
                 ret.push({
-                    x: gridScale * gridBaseX + leftBuffer,
-                    y: gridScale * (gridBaseY + i) + topBuffer,
+                    coordX: x,
+                    coordY: y,
+                    pixelX: x * this.gridParams.gridScale,
+                    pixelY: y * this.gridParams.gridScale,
+                    fill: 'red',
+                    border: 'black'
                 });
             }
         }
@@ -334,17 +285,12 @@ var D3ViewStatefulComponent = /** @class */ (function () {
     function D3ViewStatefulComponent(gridInitServ) {
         this.gridInitServ = gridInitServ;
         this.curGridState = [];
-        this.curPtList = []; // do we need this?
         this.svgSelection = '';
     }
     D3ViewStatefulComponent.prototype.ngOnInit = function () {
-        this.curGridState = this.gridInitServ.generateCoord();
         var chartId = 'd3-view';
         this.svgSelection = this._selectSvgEl(chartId);
         this._initialRender(this.svgSelection);
-        // setInterval(() => {
-        //   this._update(selection);
-        // }, 10);
     };
     D3ViewStatefulComponent.prototype._selectSvgEl = function (idIn) {
         return d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#" + idIn)
@@ -354,107 +300,37 @@ var D3ViewStatefulComponent = /** @class */ (function () {
     };
     // Default rendering
     D3ViewStatefulComponent.prototype._initialRender = function (selection) {
-        var _this = this;
         //this.curGridState = this.curGridState.concat(this.curGridState);
-        selection
-            .selectAll('path')
-            .data(this.curGridState, function (d) {
-            return _this._getKey(d);
-        })
-            .enter().append('path')
-            .attr('d', function (d) { return d._line(d.pts); })
-            .attr("stroke", function (d) { return 'rgba(112, 112, 112, 1)'; })
-            .attr("stroke-width", .5)
-            .attr("fill", "none");
-        var allPts = this._concatAllPts();
-        this.curPtList = allPts;
+        var _this = this;
         selection.selectAll('rect')
-            .data(allPts, function (d) {
+            .data(this.gridInitServ.grid, function (d) {
             // Key function, must return a unique value for every path.
             return _this._getKey(d);
         })
             .enter()
             .append('rect')
-            .attr('x', function (d) { return d.x; })
-            .attr('y', function (d) { return d.y; })
+            .attr('x', function (d) { return d.pixelX; })
+            .attr('y', function (d) { return d.pixelY; })
             .attr('height', this.gridInitServ.gridParams.gridScale)
             .attr('width', this.gridInitServ.gridParams.gridScale)
-            .attr('fill', function (d) { return d.rectColor; })
+            .attr('fill', function (d) { return d.fill; })
+            .attr('stroke-width', 3)
+            .attr('stroke', function (d) { return d.border; })
             .on('mouseover', function (d) { _this.handleMouseMove(d); });
     };
     D3ViewStatefulComponent.prototype._getKey = function (d) {
-        // string way         return '' + d.gridX + d.gridY;
-        return Number.parseFloat(d.x + '.' + d.y);
+        return d.coordX + '.' + d.coordY;
     };
-    D3ViewStatefulComponent.prototype._concatAllPts = function () {
-        return this.curGridState.reduce(function (accum, el) {
-            // const copyEl = Object.assign({}, el);
-            el.pts.map(function (locEl) { return locEl.rectColor = 'rgba(0,0,0,0)'; });
-            return accum.concat(el.pts);
-        }, []);
-    };
-    D3ViewStatefulComponent.prototype._update = function (selection) {
-        selection
-            .selectAll('path')
-            .each(function (el) {
-            el.pts.map(function (el) {
-                el.x = 100 + 10 * Math.sin((new Date).getTime() / 1000);
-            });
-        })
-            .attr('d', function (d) { return d._line(d.pts); });
-    };
-    // _createMouseEvents(selection) {
-    //   selection.on('mousemove', function () {
-    //     console.log('mouse', this)
-    //   });
     D3ViewStatefulComponent.prototype.handleMouseMove = function (curCoord) {
         var _this = this;
-        console.log(curCoord);
-        curCoord.rectColor = 'red';
-        //d3.select(this).datum(curCoord);
-        //this.bendGrid(curCoord);
-        // sample: append red rectangle to current grid location.
-        // this only appends- need to select current element instead
+        // This works, change red->blue
+        curCoord.fill = 'blue';
         this.svgSelection
             .selectAll('rect')
-            .data(this.curPtList, function (d) {
-            // Key function, must return a unique value for every path.
+            .data([curCoord], function (d) {
             return _this._getKey(d);
         })
-            .enter()
-            .append('rect')
-            .attr('x', function (d) { return d.x; })
-            .attr('y', function (d) { return d.y; })
-            .attr('height', this.gridInitServ.gridParams.gridScale)
-            .attr('width', this.gridInitServ.gridParams.gridScale)
-            .attr('fill', function (d) { return d.rectColor; })
-            .on('mouseover', function (d) { _this.handleMouseMove(d); });
-        var pathSelect = this.svgSelection
-            .selectAll('rect');
-        // key isnt working- data is ballooning
-        console.log(pathSelect, pathSelect.data());
-    };
-    D3ViewStatefulComponent.prototype.bendGrid = function (curCoord) {
-        var _this = this;
-        console.log(curCoord, this.curGridState);
-        //sample: horizontal line
-        this.curGridState[2].pts.map(function (el) {
-            el.y = el.y + el.x / 10;
-            return el;
-        });
-        this.svgSelection
-            .selectAll('path')
-            .data(this.curGridState, function (d) {
-            return _this._getKey(d);
-        })
-            .attr('d', function (d) { return d._line(d.pts); })
-            .attr("stroke", function (d) { return 'rgba(255, 0, 0, 1)'; })
-            .attr("stroke-width", .5)
-            .attr("fill", "none");
-        var pathSelect = this.svgSelection
-            .selectAll('path');
-        // key isnt working- data is ballooning
-        console.log(pathSelect, pathSelect.data());
+            .attr('fill', function (d) { return d.fill; });
     };
     D3ViewStatefulComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
@@ -538,4 +414,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\repos\pi-vi
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.64ad1af5c33f629a1eb7.js.map
+//# sourceMappingURL=main.5ba3c8bccf91598a14fe.js.map
