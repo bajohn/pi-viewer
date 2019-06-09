@@ -176,9 +176,9 @@ var pv;
     var gridParams = /** @class */ (function () {
         function gridParams() {
             // number of grid squares across
-            this.gridLimit = 4;
+            this.gridLimit = 40;
             // pixels per grid square
-            this.gridScale = 50;
+            this.gridScale = 10;
             this.topBuffer = 1;
             this.leftBuffer = 10;
         }
@@ -414,4 +414,4 @@ module.exports = __webpack_require__(/*! C:\Users\bjohn454\Documents\repos\pi-vi
 /***/ })
 
 },[[0,"runtime","vendor"]]]);
-//# sourceMappingURL=main.5ba3c8bccf91598a14fe.js.map
+//# sourceMappingURL=main.3acbed5cae5e8b9552b3.js.map
