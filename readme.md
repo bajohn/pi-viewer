@@ -1,6 +1,6 @@
 # PI Viewer
 ## Background
-This project creates the PI Viewer Web Application, which allows users to easily create portable PI displays without requiring onsite servers / overhead.
+This project creates the PI Viewer Web Application, which allows users to easily create portable PI displays without requiring onsite servers / overhead. The application only requires the PI Web API with Cross Origin Resource Sharing (CORS) Access.
 
 ## Tech Stack
 - Docker
