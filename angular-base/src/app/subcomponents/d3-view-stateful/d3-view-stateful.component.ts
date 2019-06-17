@@ -16,6 +16,9 @@ export class D3ViewStatefulComponent implements OnInit {
   private curGridState: Array<pv.gridItem> = []
   private svgSelection: any = '';
 
+  width = 1;
+  height = 1;
+
   ngOnInit() {
     const chartId = 'd3-view';
     this.svgSelection = this._selectSvgEl(chartId);
@@ -23,10 +26,13 @@ export class D3ViewStatefulComponent implements OnInit {
     this._initialRender(this.svgSelection);
   }
   private _selectSvgEl(idIn) {
+
+
     return d3.select(`#${idIn}`)
       .append('svg')
       .attr('width', '100%')
-      .attr('height', '100%');
+      .attr('height', '100%')
+      .on('mouseout', d => { this._resetGrid() });
   }
 
 
@@ -48,9 +54,10 @@ export class D3ViewStatefulComponent implements OnInit {
       .attr('height', this.gridInitServ.gridParams.gridScale)
       .attr('width', this.gridInitServ.gridParams.gridScale)
       .attr('fill', d => { return d.fill })
-      .attr('stroke-width', 3)
+      .attr('stroke-width', .5)
       .attr('stroke', d => { return d.border })
-      .on('mouseover', d => { this.handleMouseMove(d) });
+      .on('mouseover', d => { this._gridSelector(d) })
+      .on('mouseout', d => { this._handleMouseOut(d) });
 
   }
 
@@ -58,16 +65,72 @@ export class D3ViewStatefulComponent implements OnInit {
     return d.coordX + '.' + d.coordY;
   }
 
-  public handleMouseMove(curCoord: pv.gridItem) {
+  private _handleMouseOver(curCoord: pv.gridItem) {
 
-    // This works, change red->blue
-    curCoord.fill = 'blue';
+    // This works, change white->gray
+    curCoord.fill = 'gray';
     this.svgSelection
       .selectAll('rect')
       .data([curCoord], (d) => {
         return this._getKey(d);
       })
-      .attr('fill', d => { return d.fill })
+      .attr('fill', d => { return d.fill });
+  }
+
+  private _handleMouseOut(curCoord: pv.gridItem) {
+
+    // This works, change red->blue
+    // curCoord.fill = 'white';
+    this.svgSelection
+      .selectAll('rect')
+      .data([curCoord], (d) => {
+        return this._getKey(d);
+      })
+      .attr('fill', d => { return 'white' });
+  }
+
+  public _gridSelector(curCoord: pv.gridItem) {
+
+    const coordList: Array<pv.gridItem> = [];
+    //todo: want to use this limiter to avoid going off the grid
+    // && h + this.height < this.gridInitServ.gridParams.gridLimit
+    for (let h = 0; h < this.height; h++) {
+      for (let w = 0; w < this.width; w++) {
+        coordList.push(this.gridInitServ.generateCoord(w + curCoord.coordX, h + curCoord.coordY));
+      }
+    }
+
+    //this._resetGrid();
+
+
+
+    coordList.map(el => {
+      el.fill = 'gray';
+      return el;
+    });
+
+    this.svgSelection
+      .selectAll('rect')
+      .data(coordList, (d) => {
+        return this._getKey(d);
+      })
+      .attr('fill', d => { return d.fill });
+  }
+
+  // todo- make this more efficient! This is wiping the grid everytime something changes
+  
+  _resetGrid() {
+    this.gridInitServ.grid.map(el => {
+      el.fill = 'white';
+    });
+    this.svgSelection
+      .selectAll('rect')
+      .data(this.gridInitServ.grid, (d) => {
+        return this._getKey(d);
+      })
+      .attr('fill', d => { return d.fill });
+
+
   }
 
 }

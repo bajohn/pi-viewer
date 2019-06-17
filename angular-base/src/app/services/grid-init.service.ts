@@ -15,16 +15,20 @@ export class GridInitService {
     const ret: Array<pv.gridItem> = [];
     for (let x = 0; x < this.gridParams.gridLimit; x++) {
       for (let y = 0; y < this.gridParams.gridLimit; y++) {
-        ret.push({
-          coordX: x,
-          coordY: y,
-          pixelX: x * this.gridParams.gridScale,
-          pixelY: y * this.gridParams.gridScale,
-          fill: 'red',
-          border: 'black'
-        })
+        ret.push(this.generateCoord(x, y))
       }
     }
     return ret;
+  }
+
+  generateCoord(x: number, y: number): pv.gridItem {
+    return {
+      coordX: x,
+      coordY: y,
+      pixelX: x * this.gridParams.gridScale,
+      pixelY: y * this.gridParams.gridScale,
+      fill: 'white',
+      border: 'black'
+    }
   }
 }

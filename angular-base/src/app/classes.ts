@@ -19,7 +19,7 @@ export namespace pv {
         // number of grid squares across
         gridLimit = 40;
         // pixels per grid square
-        gridScale = 10;
+        gridScale = 20;
 
         topBuffer = 1;
         leftBuffer = 10;
